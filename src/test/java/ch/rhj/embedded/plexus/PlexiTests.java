@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import org.codehaus.plexus.DefaultContainerConfiguration;
 import org.codehaus.plexus.DefaultPlexusContainer;
@@ -16,6 +15,7 @@ import org.codehaus.plexus.classworlds.realm.ClassRealm;
 import org.junit.jupiter.api.Test;
 
 import ch.rhj.embedded.plexus.Plexi.ScanningMode;
+import ch.rhj.embedded.test.Foo;
 
 public class PlexiTests
 {
@@ -84,10 +84,5 @@ public class PlexiTests
 		assertTrue(instanceFoo == null);
 		Plexi.requestInjection(container, this);
 		assertTrue(instanceFoo != null);
-	}
-
-	@Named
-	public static class Foo
-	{
 	}
 }

@@ -16,18 +16,14 @@ public class PlexusExtension implements BeforeAllCallback, AfterAllCallback, Bef
 	@Override
 	public void beforeAll(ExtensionContext context) throws Exception
 	{
-		DefaultPlexusContainer container = Plexi.newContainer(Plexi.newConfiguration());
-
-		Plexi.requestStaticInjection(container, context.getRequiredTestClass());
-		getStore(context).put(CONTAINER_KEY, container);
+		getStore(context).put(CONTAINER_KEY, Plexi.newContainer(Plexi.newConfiguration()));
+		Plexi.requestStaticInjection(getContainer(context), context.getRequiredTestClass());
 	}
 
 	@Override
 	public void afterAll(ExtensionContext context) throws Exception
 	{
-		DefaultPlexusContainer container = getStore(context).remove(CONTAINER_KEY, DefaultPlexusContainer.class);
-
-		container.dispose();
+		getStore(context).remove(CONTAINER_KEY, DefaultPlexusContainer.class).dispose();
 	}
 
 	@Override

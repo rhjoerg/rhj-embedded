@@ -1,11 +1,13 @@
 package ch.rhj.embedded.plexus;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
+import org.codehaus.plexus.DefaultPlexusContainer;
 import org.junit.jupiter.api.Test;
+
+import ch.rhj.embedded.test.Foo;
 
 @WithPlexus
 public class PlexusExtensionTests
@@ -16,15 +18,14 @@ public class PlexusExtensionTests
 	@Inject
 	private Foo instanceFoo;
 
+	@Inject
+	private DefaultPlexusContainer container;
+
 	@Test
 	public void test()
 	{
-		assertTrue(staticFoo != null);
-		assertTrue(instanceFoo != null);
-	}
-
-	@Named
-	public static class Foo
-	{
+		assertNotNull(staticFoo);
+		assertNotNull(instanceFoo);
+		assertNotNull(container);
 	}
 }
