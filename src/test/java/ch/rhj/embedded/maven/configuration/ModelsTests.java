@@ -1,9 +1,10 @@
 package ch.rhj.embedded.maven.configuration;
 
-import static ch.rhj.embedded.maven.MavenTestsConstants.ARTIFACT_ID;
-import static ch.rhj.embedded.maven.MavenTestsConstants.GROUP_ID;
-import static ch.rhj.embedded.maven.MavenTestsConstants.POM_PATH;
-import static ch.rhj.embedded.maven.MavenTestsConstants.VERSION;
+import static ch.rhj.embedded.maven.MavenTestsConstants.EMBEDDED_ARTIFACT_ID;
+import static ch.rhj.embedded.maven.MavenTestsConstants.EMBEDDED_GROUP_ID;
+import static ch.rhj.embedded.maven.MavenTestsConstants.EMBEDDED_PACKAGING;
+import static ch.rhj.embedded.maven.MavenTestsConstants.EMBEDDED_POM;
+import static ch.rhj.embedded.maven.MavenTestsConstants.EMBEDDED_VERSION;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import javax.inject.Inject;
@@ -20,12 +21,13 @@ public class ModelsTests
 	private Models models;
 
 	@Test
-	public void test() throws Exception
+	public void testEmbeddedModel() throws Exception
 	{
-		Model model = models.read(POM_PATH, true);
+		Model model = models.read(EMBEDDED_POM, true);
 
-		assertEquals(GROUP_ID, model.getGroupId());
-		assertEquals(ARTIFACT_ID, model.getArtifactId());
-		assertEquals(VERSION, model.getVersion());
+		assertEquals(EMBEDDED_GROUP_ID, model.getGroupId());
+		assertEquals(EMBEDDED_ARTIFACT_ID, model.getArtifactId());
+		assertEquals(EMBEDDED_VERSION, model.getVersion());
+		assertEquals(EMBEDDED_PACKAGING, model.getPackaging());
 	}
 }

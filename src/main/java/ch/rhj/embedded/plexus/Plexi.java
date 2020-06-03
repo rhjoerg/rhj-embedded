@@ -41,6 +41,11 @@ public interface Plexi
 		return new DefaultPlexusContainer(configuration, customModules);
 	}
 
+	public static <T> void inject(DefaultPlexusContainer container, Class<? super T> role, String hint, T component)
+	{
+		container.addComponent(component, role, hint);
+	}
+
 	public static void requestStaticInjection(DefaultPlexusContainer container, Class<?> target)
 	{
 		Module module = new Module()
