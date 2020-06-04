@@ -1,36 +1,26 @@
 package ch.rhj.embedded.maven;
 
-import static ch.rhj.embedded.maven.MavenTestsConstants.EMBEDDED_ARTIFACT_ID;
-import static ch.rhj.embedded.maven.MavenTestsConstants.EMBEDDED_BASEDIR;
-import static ch.rhj.embedded.maven.MavenTestsConstants.EMBEDDED_GROUP_ID;
-import static ch.rhj.embedded.maven.MavenTestsConstants.EMBEDDED_PACKAGING;
 import static ch.rhj.embedded.maven.MavenTestsConstants.EMBEDDED_POM;
-import static ch.rhj.embedded.maven.MavenTestsConstants.EMBEDDED_VERSION;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
 import javax.inject.Inject;
 
-import org.apache.maven.artifact.Artifact;
+import org.apache.maven.Maven;
 import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.repository.DefaultRepositoryRequest;
-import org.apache.maven.artifact.resolver.ArtifactResolutionRequest;
-import org.apache.maven.artifact.resolver.ArtifactResolutionResult;
-import org.apache.maven.artifact.resolver.ArtifactResolver;
+import org.apache.maven.execution.DefaultMavenExecutionRequest;
+import org.apache.maven.execution.DefaultMavenExecutionResult;
+import org.apache.maven.execution.MavenExecutionRequest;
+import org.apache.maven.execution.MavenExecutionResult;
 import org.apache.maven.model.Model;
-import org.apache.maven.project.MavenProject;
 import org.apache.maven.repository.RepositorySystem;
-import org.apache.maven.wagon.Wagon;
-import org.codehaus.plexus.DefaultPlexusContainer;
+import org.codehaus.plexus.PlexusContainer;
+import org.eclipse.aether.repository.WorkspaceReader;
 import org.junit.jupiter.api.Test;
 
 import ch.rhj.embedded.maven.configuration.Models;
-import ch.rhj.embedded.maven.configuration.ProjectArtifactRepository;
-import ch.rhj.embedded.maven.configuration.ProjectWagon;
-import ch.rhj.embedded.plexus.Plexi;
+import ch.rhj.embedded.maven.configuration.ProjectWorkspaceReader;
 
 @WithMaven
 public class MavenExtensionsTest
@@ -39,66 +29,36 @@ public class MavenExtensionsTest
 	private Models models;
 
 	@Inject
-	private RepositorySystem repositorySystem;
-
-	@Inject
-	private ArtifactResolver artifactResolver;
-
-	@Inject
-	private ProjectArtifactRepository projectArtifactRepository;
-
-	@Inject
-	private DefaultPlexusContainer plexusContainer;
+	private PlexusContainer container;
 
 	@Test
-	public void testArtifact() throws Exception
+	public void testValidate() throws Exception
 	{
-		Plexi.inject(plexusContainer, Wagon.class, "project", new ProjectWagon());
+		Model model = models.get(EMBEDDED_POM);
 
-		List<Wagon> wagons = plexusContainer.lookupList(Wagon.class);
+		MavenExecutionRequest request = new DefaultMavenExecutionRequest();
+		MavenExecutionResult result = new DefaultMavenExecutionResult();
 
-		System.out.println("-- wagons --");
-		wagons.forEach(w -> System.out.println(w));
-
-		DefaultRepositoryRequest repositoryRequest = new DefaultRepositoryRequest();
+		RepositorySystem repositorySystem = container.lookup(RepositorySystem.class);
 		ArtifactRepository localRepository = repositorySystem.createDefaultLocalRepository();
-		List<ArtifactRepository> remoteRepositories = new ArrayList<>();
+		ArtifactRepository remoteRepository = repositorySystem.createDefaultRemoteRepository();
+		WorkspaceReader workspaceReader = container.lookup(ProjectWorkspaceReader.class);
 
-		remoteRepositories.add(projectArtifactRepository);
+		request.setLocalRepository(localRepository);
+		request.setRemoteRepositories(Arrays.asList(remoteRepository));
+		request.setGoals(Arrays.asList("validate"));
+		request.setBaseDirectory(model.getProjectDirectory());
+		request.setPom(model.getPomFile());
+		request.setWorkspaceReader(workspaceReader);
 
-		repositoryRequest.setLocalRepository(localRepository);
-		repositoryRequest.setRemoteRepositories(remoteRepositories);
+		Maven maven = container.lookup(Maven.class);
 
-		ArtifactResolutionRequest artifactRequest = new ArtifactResolutionRequest(repositoryRequest);
-		Artifact artifact = repositorySystem.createArtifact(EMBEDDED_GROUP_ID, EMBEDDED_ARTIFACT_ID, EMBEDDED_VERSION, EMBEDDED_PACKAGING);
-
-		artifactRequest.setArtifact(artifact);
-
-		ArtifactResolutionResult result = artifactResolver.resolve(artifactRequest);
+		result = maven.execute(request);
 
 		if (result.hasExceptions())
 		{
-			System.out.println("-- exceptions --");
 			result.getExceptions().forEach(e -> e.printStackTrace());
+			fail();
 		}
-
-		if (result.hasMissingArtifacts())
-		{
-			System.out.println("-- missing artifacts --");
-			result.getMissingArtifacts().forEach(a -> System.out.println(a));
-		}
-
-		assertTrue(result.isSuccess());
-	}
-
-	@Test
-	public void testMavenProject() throws Exception
-	{
-		Model model = models.read(EMBEDDED_POM, true);
-		MavenProject project = new MavenProject(model);
-
-		project.setFile(model.getPomFile());
-
-		assertEquals(EMBEDDED_BASEDIR.toFile(), project.getBasedir());
 	}
 }

@@ -11,6 +11,6 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	
-	<artifactId>test-project</artifactId>
+	<artifactId>foo-maven-plugin</artifactId>
 	
 </project>
