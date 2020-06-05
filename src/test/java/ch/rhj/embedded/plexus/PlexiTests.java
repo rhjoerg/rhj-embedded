@@ -50,6 +50,7 @@ public class PlexiTests
 		DefaultContainerConfiguration configuration = Plexi.configurationBuilder().build();
 
 		assertTrue(configuration.getAutoWiring());
+		assertEquals(ScanningMode.OFF.value, configuration.getClassPathScanning());
 	}
 
 	@Test
@@ -58,6 +59,7 @@ public class PlexiTests
 		DefaultContainerConfiguration configuration = Plexi.newConfiguration();
 
 		assertTrue(configuration.getAutoWiring());
+		assertEquals(ScanningMode.OFF.value, configuration.getClassPathScanning());
 	}
 
 	@Test

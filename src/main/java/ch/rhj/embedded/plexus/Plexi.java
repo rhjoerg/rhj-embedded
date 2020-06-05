@@ -112,7 +112,7 @@ public interface Plexi
 
 		private boolean autoWiring = true;
 		private boolean jsr250Lifecycle = true;
-		private ScanningMode scanningMode = ScanningMode.INDEX;
+		private ScanningMode scanningMode = ScanningMode.OFF;
 
 		public ClassWorld classWorld()
 		{
