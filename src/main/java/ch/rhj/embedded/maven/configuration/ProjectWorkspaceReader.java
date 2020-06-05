@@ -9,30 +9,27 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.apache.maven.artifact.ArtifactUtils;
+import org.apache.maven.RepositoryUtils;
 import org.apache.maven.model.Model;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.artifact.ProjectArtifact;
 import org.apache.maven.repository.internal.MavenWorkspaceReader;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.repository.WorkspaceRepository;
+import org.eclipse.aether.util.artifact.ArtifactIdUtils;
 
-@Named
+@Named("reactor")
 public class ProjectWorkspaceReader implements MavenWorkspaceReader
 {
 	private final MavenProject project;
-	private final ProjectArtifact artifact;
-	private final String versionLessKey;
-	private final String versionedKey;
+	private final Artifact artifact;
 	private final WorkspaceRepository repository;
 
 	@Inject
 	public ProjectWorkspaceReader(Projects projects) throws IOException
 	{
 		project = projects.get(Paths.get("pom.xml"));
-		artifact = new ProjectArtifact(project);
-		versionLessKey = ArtifactUtils.versionlessKey(artifact);
-		versionedKey = ArtifactUtils.key(artifact);
+		artifact = RepositoryUtils.toArtifact(new ProjectArtifact(project));
 		repository = new WorkspaceRepository("project", Set.of(project.getId()));
 	}
 
@@ -45,9 +42,7 @@ public class ProjectWorkspaceReader implements MavenWorkspaceReader
 	@Override
 	public File findArtifact(Artifact artifact)
 	{
-		String key = ArtifactUtils.key(artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion());
-
-		if (versionedKey.equals(key))
+		if (ArtifactIdUtils.equalsId(this.artifact, artifact))
 		{
 			return new File(project.getBuild().getOutputDirectory());
 		}
@@ -58,9 +53,7 @@ public class ProjectWorkspaceReader implements MavenWorkspaceReader
 	@Override
 	public List<String> findVersions(Artifact artifact)
 	{
-		String key = ArtifactUtils.versionlessKey(artifact.getGroupId(), artifact.getArtifactId());
-
-		if (versionLessKey.equals(key))
+		if (ArtifactIdUtils.equalsVersionlessId(this.artifact, artifact))
 		{
 			return List.of(this.artifact.getVersion());
 		}
@@ -71,6 +64,11 @@ public class ProjectWorkspaceReader implements MavenWorkspaceReader
 	@Override
 	public Model findModel(Artifact artifact)
 	{
-		throw new UnsupportedOperationException("not yet implemented");
+		if (ArtifactIdUtils.equalsId(this.artifact, artifact))
+		{
+			return project.getModel();
+		}
+
+		return null;
 	}
 }

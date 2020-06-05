@@ -1,6 +1,5 @@
 package ch.rhj.embedded.plexus;
 
-import static org.codehaus.plexus.PlexusConstants.GLOBAL_VISIBILITY;
 import static org.codehaus.plexus.PlexusConstants.SCANNING_CACHE;
 import static org.codehaus.plexus.PlexusConstants.SCANNING_INDEX;
 import static org.codehaus.plexus.PlexusConstants.SCANNING_OFF;
@@ -150,7 +149,6 @@ public interface Plexi
 			configuration.setAutoWiring(autoWiring());
 			configuration.setJSR250Lifecycle(jsr250Lifecycle());
 			configuration.setClassPathScanning(scanningMode().value);
-			configuration.setComponentVisibility(GLOBAL_VISIBILITY);
 
 			return configuration;
 		}
