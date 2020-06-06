@@ -22,8 +22,8 @@ import org.codehaus.plexus.component.repository.ComponentDescriptor;
 import org.eclipse.aether.repository.WorkspaceReader;
 import org.junit.jupiter.api.Test;
 
-import ch.rhj.embedded.maven.configuration.Models;
-import ch.rhj.embedded.maven.configuration.ProjectWorkspaceReader;
+import ch.rhj.embedded.maven.repository.ModelRepository;
+import ch.rhj.embedded.maven.repository.ProjectWorkspaceReader;
 
 @WithMaven
 public class MavenExtensionsTest
@@ -32,7 +32,7 @@ public class MavenExtensionsTest
 	private DefaultPlexusContainer container;
 
 	@Inject
-	private Models models;
+	private ModelRepository modelRepository;
 
 	@Test
 	public void testWorkspaceReader() throws Exception
@@ -51,7 +51,7 @@ public class MavenExtensionsTest
 	{
 		System.out.println("--- testMavenValidate ---");
 
-		Model model = models.get(EMBEDDED_POM);
+		Model model = modelRepository.get(EMBEDDED_POM);
 
 		MavenExecutionRequest request = new DefaultMavenExecutionRequest();
 		MavenExecutionResult result = new DefaultMavenExecutionResult();

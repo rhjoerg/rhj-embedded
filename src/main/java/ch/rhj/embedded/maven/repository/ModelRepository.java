@@ -27,24 +27,30 @@ public class ModelRepository
 		this.reader = reader;
 	}
 
-	public synchronized Model get(URL url) throws Exception
+	public synchronized Model get(URL pomUrl) throws Exception
 	{
-		Model model = models.get(url);
+		Model model = models.get(pomUrl);
 
 		if (model == null)
 		{
-			try (InputStream input = url.openStream())
+			try (InputStream input = pomUrl.openStream())
 			{
 				model = reader.read(input, options);
-				models.put(url, model);
+				models.put(pomUrl, model);
 			}
 		}
 
 		return model;
 	}
 
-	public Model get(Path path) throws Exception
+	public Model get(Path pomPath) throws Exception
 	{
-		return get(path.toAbsolutePath().normalize().toUri().toURL());
+		pomPath = pomPath.toAbsolutePath().normalize();
+
+		Model model = get(pomPath.toUri().toURL());
+
+		model.setPomFile(pomPath.toFile());
+
+		return model;
 	}
 }

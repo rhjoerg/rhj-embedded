@@ -1,7 +1,6 @@
-package ch.rhj.embedded.maven.configuration;
+package ch.rhj.embedded.maven.repository;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Set;
@@ -26,9 +25,9 @@ public class ProjectWorkspaceReader implements MavenWorkspaceReader
 	private final WorkspaceRepository repository;
 
 	@Inject
-	public ProjectWorkspaceReader(Projects projects) throws IOException
+	public ProjectWorkspaceReader(ProjectRepository projectRepository) throws Exception
 	{
-		project = projects.get(Paths.get("pom.xml"));
+		project = projectRepository.get(Paths.get("pom.xml"));
 		artifact = RepositoryUtils.toArtifact(new ProjectArtifact(project));
 		repository = new WorkspaceRepository("project", Set.of(project.getId()));
 	}
