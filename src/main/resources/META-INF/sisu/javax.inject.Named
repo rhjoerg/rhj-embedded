@@ -1,3 +1,5 @@
+ch.rhj.embedded.maven.repository.MavenProperties
 ch.rhj.embedded.maven.repository.ModelRepository
 ch.rhj.embedded.maven.repository.ProjectRepository
 ch.rhj.embedded.maven.repository.ProjectWorkspaceReader
+ch.rhj.embedded.maven.repository.SettingsRepository
