@@ -17,4 +17,5 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @ExtendWith(PlexusExtension.class)
 public @interface WithPlexus
 {
+	String[] exclusions() default {};
 }

@@ -1,20 +1,27 @@
 package ch.rhj.embedded.plexus;
 
-import static ch.rhj.embedded.plexus.Plexi.ScanningMode.scanningMode;
-import static org.codehaus.plexus.PlexusConstants.SCANNING_OFF;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
 import org.codehaus.plexus.DefaultContainerConfiguration;
 import org.codehaus.plexus.DefaultPlexusContainer;
+import org.codehaus.plexus.PlexusConstants;
 import org.codehaus.plexus.classworlds.ClassWorld;
 import org.codehaus.plexus.classworlds.realm.ClassRealm;
+import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 import org.junit.jupiter.api.Test;
 
-import ch.rhj.embedded.plexus.Plexi.ScanningMode;
+import com.google.inject.Binding;
+import com.google.inject.Injector;
+import com.google.inject.Key;
+
 import ch.rhj.embedded.test.Foo;
 
 public class PlexiTests
@@ -38,19 +45,12 @@ public class PlexiTests
 	}
 
 	@Test
-	public void testScanningMode()
-	{
-		assertEquals(ScanningMode.OFF, scanningMode(SCANNING_OFF));
-		assertThrows(IllegalArgumentException.class, () -> scanningMode(""));
-	}
-
-	@Test
 	public void testConfigurationBuilder()
 	{
 		DefaultContainerConfiguration configuration = Plexi.configurationBuilder().build();
 
 		assertTrue(configuration.getAutoWiring());
-		assertEquals(ScanningMode.OFF.value, configuration.getClassPathScanning());
+		assertEquals(PlexusConstants.SCANNING_OFF, configuration.getClassPathScanning());
 	}
 
 	@Test
@@ -59,13 +59,27 @@ public class PlexiTests
 		DefaultContainerConfiguration configuration = Plexi.newConfiguration();
 
 		assertTrue(configuration.getAutoWiring());
-		assertEquals(ScanningMode.OFF.value, configuration.getClassPathScanning());
+		assertEquals(PlexusConstants.SCANNING_OFF, configuration.getClassPathScanning());
 	}
 
 	@Test
 	public void testNewContainer() throws Exception
 	{
-		Plexi.newContainer(Plexi.newConfiguration());
+		DefaultPlexusContainer container = Plexi.newContainer(Plexi.newConfiguration());
+		Injector injector;
+		Binding<Foo> binding;
+
+		injector = container.addPlexusInjector(List.of());
+		binding = injector.getExistingBinding(Key.get(Foo.class));
+
+		assertNull(binding);
+		assertThrows(ComponentLookupException.class, () -> container.lookup(Foo.class));
+
+		injector = Plexi.index(container, List.of());
+		binding = injector.getExistingBinding(Key.get(Foo.class));
+
+		assertNotNull(binding);
+		assertNotNull(container.lookup(Foo.class));
 	}
 
 	@Test

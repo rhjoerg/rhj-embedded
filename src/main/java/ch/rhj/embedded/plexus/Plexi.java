@@ -1,11 +1,11 @@
 package ch.rhj.embedded.plexus;
 
-import static org.codehaus.plexus.PlexusConstants.SCANNING_CACHE;
-import static org.codehaus.plexus.PlexusConstants.SCANNING_INDEX;
 import static org.codehaus.plexus.PlexusConstants.SCANNING_OFF;
-import static org.codehaus.plexus.PlexusConstants.SCANNING_ON;
 
+import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 import org.codehaus.plexus.ContainerConfiguration;
 import org.codehaus.plexus.DefaultContainerConfiguration;
@@ -13,9 +13,18 @@ import org.codehaus.plexus.DefaultPlexusContainer;
 import org.codehaus.plexus.PlexusContainerException;
 import org.codehaus.plexus.classworlds.ClassWorld;
 import org.codehaus.plexus.classworlds.realm.ClassRealm;
+import org.codehaus.plexus.context.ContextMapAdapter;
+import org.eclipse.sisu.plexus.PlexusAnnotatedBeanModule;
+import org.eclipse.sisu.plexus.PlexusBeanModule;
+import org.eclipse.sisu.space.BeanScanning;
+import org.eclipse.sisu.space.ClassSpace;
+import org.eclipse.sisu.space.URLClassSpace;
 
 import com.google.inject.Binder;
+import com.google.inject.Injector;
 import com.google.inject.Module;
+
+import ch.rhj.embedded.plexus.exclusion.ExcludingStrategy;
 
 public interface Plexi
 {
@@ -39,6 +48,19 @@ public interface Plexi
 	public static DefaultPlexusContainer newContainer(ContainerConfiguration configuration, Module... customModules) throws PlexusContainerException
 	{
 		return new DefaultPlexusContainer(configuration, customModules);
+	}
+
+	public static Injector index(DefaultPlexusContainer container, Collection<String> exclusions)
+	{
+		ClassRealm containerRealm = container.getContainerRealm();
+		ClassSpace space = new URLClassSpace(containerRealm);
+		Map<?, ?> variables = new ContextMapAdapter(container.getContext());
+		BeanScanning scanning = BeanScanning.GLOBAL_INDEX;
+		PlexusAnnotatedBeanModule annotatedBeanModule = new PlexusAnnotatedBeanModule(space, variables, scanning);
+		ExcludingStrategy strategy = new ExcludingStrategy(exclusions);
+		PlexusBeanModule beanModule = annotatedBeanModule.with(strategy);
+
+		return container.addPlexusInjector(List.of(beanModule));
 	}
 
 	public static <T> void inject(DefaultPlexusContainer container, Class<? super T> role, String hint, T component)
@@ -74,37 +96,6 @@ public interface Plexi
 		container.addPlexusInjector(Collections.emptyList(), module);
 	}
 
-	public static enum ScanningMode
-	{
-		OFF(SCANNING_OFF),
-
-		ON(SCANNING_ON),
-
-		INDEX(SCANNING_INDEX),
-
-		CACHE(SCANNING_CACHE);
-
-		public final String value;
-
-		private ScanningMode(String value)
-		{
-			this.value = value;
-		}
-
-		public static ScanningMode scanningMode(String value)
-		{
-			for (ScanningMode scanning : ScanningMode.values())
-			{
-				if (scanning.value.equalsIgnoreCase(value))
-				{
-					return scanning;
-				}
-			}
-
-			throw new IllegalArgumentException();
-		}
-	}
-
 	public static class ConfigurationBuilder
 	{
 		private ClassWorld classWorld = newClassWorld();
@@ -112,7 +103,7 @@ public interface Plexi
 
 		private boolean autoWiring = true;
 		private boolean jsr250Lifecycle = true;
-		private ScanningMode scanningMode = ScanningMode.OFF;
+		private String scanning = SCANNING_OFF;
 
 		public ClassWorld classWorld()
 		{
@@ -134,9 +125,16 @@ public interface Plexi
 			return jsr250Lifecycle;
 		}
 
-		public ScanningMode scanningMode()
+		public String scanning()
 		{
-			return scanningMode;
+			return scanning;
+		}
+
+		public ConfigurationBuilder scanning(String scanning)
+		{
+			this.scanning = scanning;
+
+			return this;
 		}
 
 		public DefaultContainerConfiguration build()
@@ -148,7 +146,7 @@ public interface Plexi
 
 			configuration.setAutoWiring(autoWiring());
 			configuration.setJSR250Lifecycle(jsr250Lifecycle());
-			configuration.setClassPathScanning(scanningMode().value);
+			configuration.setClassPathScanning(scanning);
 
 			return configuration;
 		}

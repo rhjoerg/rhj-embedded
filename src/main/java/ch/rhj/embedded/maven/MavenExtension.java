@@ -1,8 +1,20 @@
 package ch.rhj.embedded.maven;
 
-import org.junit.jupiter.api.extension.Extension;
+import java.util.Set;
 
-public class MavenExtension implements Extension
+import org.junit.jupiter.api.extension.ExtensionContext;
+
+import ch.rhj.embedded.plexus.PlexusExtension;
+
+public class MavenExtension extends PlexusExtension
 {
+	@Override
+	protected Set<String> getExclusions(ExtensionContext context)
+	{
+		Set<String> exclusions = super.getExclusions(context);
 
+		exclusions.add("org.apache.maven.ReactorReader");
+
+		return exclusions;
+	}
 }

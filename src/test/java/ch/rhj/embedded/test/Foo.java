@@ -1,8 +1,8 @@
 package ch.rhj.embedded.test;
 
-import javax.inject.Named;
+import org.codehaus.plexus.component.annotations.Component;
 
-@Named
+@Component(role = Foo.class)
 public class Foo
 {
 }
