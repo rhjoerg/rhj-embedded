@@ -14,6 +14,7 @@ public class MavenExtension extends PlexusExtension
 		Set<String> exclusions = super.getExclusions(context);
 
 		exclusions.add("org.apache.maven.ReactorReader");
+		exclusions.add("org.apache.maven.classrealm.DefaultClassRealmManager");
 
 		return exclusions;
 	}

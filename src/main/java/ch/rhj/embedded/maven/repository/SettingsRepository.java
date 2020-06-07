@@ -1,5 +1,6 @@
 package ch.rhj.embedded.maven.repository;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,12 +50,27 @@ public class SettingsRepository
 	{
 		DefaultSettingsBuildingRequest request = new DefaultSettingsBuildingRequest();
 
-		request.setGlobalSettingsFile(mavenProperties.globalSettingsFile());
-		request.setUserSettingsFile(mavenProperties.userSettingsFile(pomPath));
+		settingsFiles(pomPath, request);
+
 		request.setSystemProperties(mavenProperties.systemProperties());
 		request.setUserProperties(mavenProperties.userProperties(pomPath));
 
 		return createSettings(request);
+	}
+
+	private void settingsFiles(Path pomPath, DefaultSettingsBuildingRequest request)
+	{
+		File globalSettingsFile = mavenProperties.globalSettingsFile();
+		File userSettingsFile = mavenProperties.userSettingsFile(pomPath);
+
+		if (userSettingsFile == null)
+		{
+			request.setGlobalSettingsFile(globalSettingsFile);
+		}
+		else
+		{
+			request.setUserSettingsFile(userSettingsFile);
+		}
 	}
 
 	private Settings createSettings(SettingsBuildingRequest request) throws Exception

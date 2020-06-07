@@ -13,7 +13,9 @@ import org.codehaus.plexus.DefaultPlexusContainer;
 import org.codehaus.plexus.PlexusContainerException;
 import org.codehaus.plexus.classworlds.ClassWorld;
 import org.codehaus.plexus.classworlds.realm.ClassRealm;
+import org.codehaus.plexus.classworlds.strategy.ParentFirstStrategy;
 import org.codehaus.plexus.context.ContextMapAdapter;
+import org.codehaus.plexus.util.ReflectionUtils;
 import org.eclipse.sisu.plexus.PlexusAnnotatedBeanModule;
 import org.eclipse.sisu.plexus.PlexusBeanModule;
 import org.eclipse.sisu.space.BeanScanning;
@@ -30,17 +32,33 @@ public interface Plexi
 {
 	public final static String DEFAULT_REALM_NAME = "plexus.core";
 
-	public static ClassWorld newClassWorld()
+	public static void setParentFirstStrategy(ClassRealm realm)
 	{
-		return new ClassWorld(DEFAULT_REALM_NAME, Thread.currentThread().getContextClassLoader());
+		try
+		{
+			ReflectionUtils.setVariableValueInObject(realm, "strategy", new ParentFirstStrategy(realm));
+		}
+		catch (IllegalAccessException e)
+		{
+			throw new RuntimeException(e);
+		}
 	}
 
-	public static ConfigurationBuilder configurationBuilder()
+	public static ClassWorld newClassWorld() throws Exception
+	{
+		ClassWorld world = new ClassWorld(DEFAULT_REALM_NAME, ClassWorld.class.getClassLoader());
+
+		setParentFirstStrategy(world.getClassRealm(DEFAULT_REALM_NAME));
+
+		return world;
+	}
+
+	public static ConfigurationBuilder configurationBuilder() throws Exception
 	{
 		return new ConfigurationBuilder();
 	}
 
-	public static DefaultContainerConfiguration newConfiguration()
+	public static DefaultContainerConfiguration newConfiguration() throws Exception
 	{
 		return configurationBuilder().build();
 	}
@@ -98,12 +116,18 @@ public interface Plexi
 
 	public static class ConfigurationBuilder
 	{
-		private ClassWorld classWorld = newClassWorld();
-		private ClassRealm classRealm = classWorld.getClassRealm(DEFAULT_REALM_NAME);
+		private ClassWorld classWorld;
+		private ClassRealm classRealm;
 
 		private boolean autoWiring = true;
 		private boolean jsr250Lifecycle = true;
 		private String scanning = SCANNING_OFF;
+
+		public ConfigurationBuilder() throws Exception
+		{
+			this.classWorld = newClassWorld();
+			this.classRealm = classWorld.getClassRealm(DEFAULT_REALM_NAME);
+		}
 
 		public ClassWorld classWorld()
 		{
@@ -146,7 +170,7 @@ public interface Plexi
 
 			configuration.setAutoWiring(autoWiring());
 			configuration.setJSR250Lifecycle(jsr250Lifecycle());
-			configuration.setClassPathScanning(scanning);
+			configuration.setClassPathScanning(scanning());
 
 			return configuration;
 		}

@@ -15,6 +15,7 @@ import org.codehaus.plexus.DefaultPlexusContainer;
 import org.codehaus.plexus.PlexusConstants;
 import org.codehaus.plexus.classworlds.ClassWorld;
 import org.codehaus.plexus.classworlds.realm.ClassRealm;
+import org.codehaus.plexus.classworlds.strategy.ParentFirstStrategy;
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 import org.junit.jupiter.api.Test;
 
@@ -33,7 +34,7 @@ public class PlexiTests
 	private Foo instanceFoo;
 
 	@Test
-	public void testNewClassWorld() throws ClassNotFoundException
+	public void testNewClassWorld() throws Exception
 	{
 		ClassWorld classWorld = Plexi.newClassWorld();
 		ClassRealm classRealm = classWorld.getClassRealm(Plexi.DEFAULT_REALM_NAME);
@@ -45,7 +46,16 @@ public class PlexiTests
 	}
 
 	@Test
-	public void testConfigurationBuilder()
+	public void testClassRealmStrategy() throws Exception
+	{
+		ClassWorld classWorld = Plexi.newClassWorld();
+		ClassRealm classRealm = classWorld.getClassRealm(Plexi.DEFAULT_REALM_NAME);
+
+		assertTrue(classRealm.getStrategy() instanceof ParentFirstStrategy);
+	}
+
+	@Test
+	public void testConfigurationBuilder() throws Exception
 	{
 		DefaultContainerConfiguration configuration = Plexi.configurationBuilder().build();
 
@@ -54,7 +64,7 @@ public class PlexiTests
 	}
 
 	@Test
-	public void testNewConfiguration()
+	public void testNewConfiguration() throws Exception
 	{
 		DefaultContainerConfiguration configuration = Plexi.newConfiguration();
 
