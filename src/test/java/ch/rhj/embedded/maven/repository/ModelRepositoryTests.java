@@ -37,9 +37,9 @@ public class ModelRepositoryTests
 	@Test
 	public void testEmbeddedModel() throws Exception
 	{
-		URL url = container.getContainerRealm().getResource("META-INF/maven/org.apache.maven/maven-embedder/pom.xml");
+		URL url = container.getContainerRealm().getResource("META-INF/maven/org.apache.maven/maven-compat/pom.xml");
 		Model model = modelRepository.get(url);
 
-		assertEquals("maven-embedder", model.getArtifactId());
+		assertEquals("maven-compat", model.getArtifactId());
 	}
 }

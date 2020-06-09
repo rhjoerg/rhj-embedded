@@ -1,7 +1,6 @@
 ch.rhj.embedded.maven.Builder
 ch.rhj.embedded.maven.build.ProfilesFactory
 ch.rhj.embedded.maven.build.RepositoriesFactory
-ch.rhj.embedded.maven.realm.ParentFirstClassRealmManager
 ch.rhj.embedded.maven.repository.MavenProperties
 ch.rhj.embedded.maven.repository.ModelRepository
 ch.rhj.embedded.maven.repository.ProjectRepository

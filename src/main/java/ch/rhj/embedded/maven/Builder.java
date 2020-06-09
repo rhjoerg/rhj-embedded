@@ -65,7 +65,7 @@ public class Builder
 		}
 	}
 
-	private DefaultMavenExecutionRequest request(Path pomPath, String[] goals) throws Exception
+	public DefaultMavenExecutionRequest request(Path pomPath, String[] goals) throws Exception
 	{
 		DefaultMavenExecutionRequest request = new DefaultMavenExecutionRequest();
 		Settings settings = settingsRepository.get(pomPath);
@@ -94,15 +94,15 @@ public class Builder
 		request.setProfiles(profiles.stream().map(p -> convertFromSettingsProfile(p)).collect(toList()));
 		request.setActiveProfiles(profiles.stream().map(p -> p.getId()).collect(toList()));
 
-		List<ArtifactRepository> pluginRepositories = new ArrayList<>();
+		List<ArtifactRepository> pluginArtifactRepositories = new ArrayList<>();
 
 		request.setLocalRepository(repositoriesFactory.localRepository(settings));
-		pluginRepositories.add(request.getLocalRepository());
+		pluginArtifactRepositories.add(request.getLocalRepository());
 
 		request.setRemoteRepositories(repositoriesFactory.remoteRepositories(profiles));
-		pluginRepositories.addAll(request.getRemoteRepositories());
+		pluginArtifactRepositories.addAll(request.getRemoteRepositories());
 
-		// request.setPluginArtifactRepositories(pluginRepositories);
+		request.setPluginArtifactRepositories(pluginArtifactRepositories);
 
 		requestPopulator.populateDefaults(request);
 

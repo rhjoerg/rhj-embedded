@@ -13,8 +13,7 @@ import ch.rhj.embedded.test.Foo2;
 import ch.rhj.embedded.test.Foo3;
 
 @WithPlexus(exclusions = "ch.rhj.embedded.test.Foo1")
-@PlexusExclusion("ch.rhj.embedded.test.Foo2")
-@PlexusExclusions(@PlexusExclusion("ch.rhj.embedded.test.Foo3"))
+@PlexusExclusions({ "ch.rhj.embedded.test.Foo2", "ch.rhj.embedded.test.Foo3" })
 public class PlexusExclusionTests
 {
 	@Inject

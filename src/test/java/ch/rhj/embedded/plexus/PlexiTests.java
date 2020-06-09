@@ -15,7 +15,6 @@ import org.codehaus.plexus.DefaultPlexusContainer;
 import org.codehaus.plexus.PlexusConstants;
 import org.codehaus.plexus.classworlds.ClassWorld;
 import org.codehaus.plexus.classworlds.realm.ClassRealm;
-import org.codehaus.plexus.classworlds.strategy.ParentFirstStrategy;
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 import org.junit.jupiter.api.Test;
 
@@ -43,15 +42,6 @@ public class PlexiTests
 		Class<?> actual = classRealm.loadClass(PlexiTests.class.getName());
 
 		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void testClassRealmStrategy() throws Exception
-	{
-		ClassWorld classWorld = Plexi.newClassWorld();
-		ClassRealm classRealm = classWorld.getClassRealm(Plexi.DEFAULT_REALM_NAME);
-
-		assertTrue(classRealm.getStrategy() instanceof ParentFirstStrategy);
 	}
 
 	@Test

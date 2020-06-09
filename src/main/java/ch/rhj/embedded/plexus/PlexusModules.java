@@ -5,16 +5,16 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Inherited;
-import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+
+import com.google.inject.Module;
 
 @Documented
 @Retention(RUNTIME)
 @Target(TYPE)
 @Inherited
-@Repeatable(PlexusExclusions.class)
-public @interface PlexusExclusion
+public @interface PlexusModules
 {
-	String[] value();
+	public Class<? extends Module>[] value();
 }

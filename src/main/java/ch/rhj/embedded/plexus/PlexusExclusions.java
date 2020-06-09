@@ -14,5 +14,5 @@ import java.lang.annotation.Target;
 @Inherited
 public @interface PlexusExclusions
 {
-	PlexusExclusion[] value();
+	String[] value();
 }

@@ -7,8 +7,6 @@ import java.util.Map;
 import java.util.Random;
 
 import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
 
 import org.apache.maven.classrealm.ClassRealmManager;
 import org.apache.maven.extension.internal.CoreExportsProvider;
@@ -20,10 +18,8 @@ import org.codehaus.plexus.classworlds.realm.ClassRealm;
 import org.codehaus.plexus.classworlds.realm.DuplicateRealmException;
 import org.eclipse.aether.artifact.Artifact;
 
-import ch.rhj.embedded.plexus.Plexi;
-
-@Named
-@Singleton
+//@Named
+//@Singleton
 public class ParentFirstClassRealmManager implements ClassRealmManager
 {
 	public static final String API_REALMID = "maven.api";
@@ -42,7 +38,7 @@ public class ParentFirstClassRealmManager implements ClassRealmManager
 		this.world = container.getClassWorld();
 		this.coreRealm = container.getContainerRealm();
 
-		Plexi.setParentFirstStrategy(coreRealm);
+//		Plexi.setParentFirstStrategy(coreRealm);
 
 		Map<String, ClassLoader> foreignImports = exports.get().getExportedPackages();
 
@@ -129,7 +125,7 @@ public class ParentFirstClassRealmManager implements ClassRealmManager
 				{
 					ClassRealm realm = world.newRealm(realmId, null);
 
-					Plexi.setParentFirstStrategy(realm);
+//					Plexi.setParentFirstStrategy(realm);
 
 					return realm;
 				}

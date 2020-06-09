@@ -13,9 +13,7 @@ import org.codehaus.plexus.DefaultPlexusContainer;
 import org.codehaus.plexus.PlexusContainerException;
 import org.codehaus.plexus.classworlds.ClassWorld;
 import org.codehaus.plexus.classworlds.realm.ClassRealm;
-import org.codehaus.plexus.classworlds.strategy.ParentFirstStrategy;
 import org.codehaus.plexus.context.ContextMapAdapter;
-import org.codehaus.plexus.util.ReflectionUtils;
 import org.eclipse.sisu.plexus.PlexusAnnotatedBeanModule;
 import org.eclipse.sisu.plexus.PlexusBeanModule;
 import org.eclipse.sisu.space.BeanScanning;
@@ -32,23 +30,23 @@ public interface Plexi
 {
 	public final static String DEFAULT_REALM_NAME = "plexus.core";
 
-	public static void setParentFirstStrategy(ClassRealm realm)
-	{
-		try
-		{
-			ReflectionUtils.setVariableValueInObject(realm, "strategy", new ParentFirstStrategy(realm));
-		}
-		catch (IllegalAccessException e)
-		{
-			throw new RuntimeException(e);
-		}
-	}
+//	public static void setParentFirstStrategy(ClassRealm realm)
+//	{
+//		try
+//		{
+//			ReflectionUtils.setVariableValueInObject(realm, "strategy", new ParentFirstStrategy(realm));
+//		}
+//		catch (IllegalAccessException e)
+//		{
+//			throw new RuntimeException(e);
+//		}
+//	}
 
 	public static ClassWorld newClassWorld() throws Exception
 	{
 		ClassWorld world = new ClassWorld(DEFAULT_REALM_NAME, ClassWorld.class.getClassLoader());
 
-		setParentFirstStrategy(world.getClassRealm(DEFAULT_REALM_NAME));
+//		setParentFirstStrategy(world.getClassRealm(DEFAULT_REALM_NAME));
 
 		return world;
 	}
@@ -120,7 +118,7 @@ public interface Plexi
 		private ClassRealm classRealm;
 
 		private boolean autoWiring = true;
-		private boolean jsr250Lifecycle = true;
+		private boolean jsr250Lifecycle = false;
 		private String scanning = SCANNING_OFF;
 
 		public ConfigurationBuilder() throws Exception

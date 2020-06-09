@@ -10,6 +10,8 @@ import java.lang.annotation.Target;
 
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import com.google.inject.Module;
+
 @Documented
 @Retention(RUNTIME)
 @Target(TYPE)
@@ -18,4 +20,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 public @interface WithPlexus
 {
 	String[] exclusions() default {};
+
+	public Class<? extends Module>[] modules() default {};
 }
