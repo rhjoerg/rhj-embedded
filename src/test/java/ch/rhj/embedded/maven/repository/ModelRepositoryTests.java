@@ -1,11 +1,11 @@
 package ch.rhj.embedded.maven.repository;
 
+import static ch.rhj.embedded.maven.MavenTestsConstants.EMBEDDED_ID;
+import static ch.rhj.embedded.maven.MavenTestsConstants.EMBEDDED_POM;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.URL;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import javax.inject.Inject;
 
@@ -27,9 +27,8 @@ public class ModelRepositoryTests
 	@Test
 	public void testCaching() throws Exception
 	{
-		Path path = Paths.get("pom.xml");
-		Model model1 = modelRepository.get(path);
-		Model model2 = modelRepository.get(path);
+		Model model1 = modelRepository.get(EMBEDDED_POM);
+		Model model2 = modelRepository.get(EMBEDDED_POM);
 
 		assertTrue(model1 == model2);
 	}
@@ -41,5 +40,13 @@ public class ModelRepositoryTests
 		Model model = modelRepository.get(url);
 
 		assertEquals("maven-compat", model.getArtifactId());
+	}
+
+	@Test
+	public void testProperties() throws Exception
+	{
+		Model model = modelRepository.get(EMBEDDED_POM);
+
+		assertEquals(EMBEDDED_ID, model.getId());
 	}
 }

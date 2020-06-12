@@ -27,7 +27,7 @@
 		<maven.compiler.source>11</maven.compiler.source>
 		<maven.compiler.target>11</maven.compiler.target>
 		<java.version>11</java.version>
-
+		
 	</properties>
 	
 	<dependencyManagement>
@@ -37,6 +37,12 @@
 				<groupId>commons-codec</groupId>
 				<artifactId>commons-codec</artifactId>
 				<version>1.14</version>
+			</dependency>
+			<!-- https://mvnrepository.com/artifact/commons-collections/commons-collections -->
+			<dependency>
+				<groupId>commons-collections</groupId>
+				<artifactId>commons-collections</artifactId>
+				<version>3.2.2</version>
 			</dependency>
 			<!-- https://mvnrepository.com/artifact/commons-digester/commons-digester -->
 			<dependency>
@@ -49,6 +55,12 @@
 				<groupId>commons-logging</groupId>
 				<artifactId>commons-logging</artifactId>
 				<version>1.2</version>
+			</dependency>
+			<!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
+			<dependency>
+				<groupId>commons-io</groupId>
+				<artifactId>commons-io</artifactId>
+				<version>2.7</version>
 			</dependency>
 			<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
 			<dependency>
@@ -74,22 +86,10 @@
 				<artifactId>maven-core</artifactId>
 				<version>3.6.3</version>
 			</dependency>
-			<!-- https://mvnrepository.com/artifact/org.apache.maven/maven-embedder -->
-			<dependency>
-				<groupId>org.apache.maven</groupId>
-				<artifactId>maven-embedder</artifactId>
-				<version>3.6.3</version>
-			</dependency>
 			<!-- https://mvnrepository.com/artifact/org.apache.maven/maven-model -->
 			<dependency>
 				<groupId>org.apache.maven</groupId>
 				<artifactId>maven-model</artifactId>
-				<version>3.6.3</version>
-			</dependency>
-			<!-- https://mvnrepository.com/artifact/org.apache.maven/maven-plugin-api -->
-			<dependency>
-				<groupId>org.apache.maven</groupId>
-				<artifactId>maven-plugin-api</artifactId>
 				<version>3.6.3</version>
 			</dependency>
 			<!-- https://mvnrepository.com/artifact/org.apache.maven/maven-settings -->
@@ -116,12 +116,6 @@
 				<artifactId>doxia-sink-api</artifactId>
 				<version>1.9.1</version>
 			</dependency>
-			<!-- https://mvnrepository.com/artifact/org.apache.maven.plugin-tools/maven-plugin-tools-annotations -->
-			<dependency>
-				<groupId>org.apache.maven.plugin-tools</groupId>
-				<artifactId>maven-plugin-tools-annotations</artifactId>
-				<version>3.6.0</version>
-			</dependency>
 			<!-- https://mvnrepository.com/artifact/org.apache.maven.plugin-tools/maven-plugin-tools-api -->
 			<dependency>
 				<groupId>org.apache.maven.plugin-tools</groupId>
@@ -138,12 +132,6 @@
 			<dependency>
 				<groupId>org.apache.maven.plugin-tools</groupId>
 				<artifactId>maven-plugin-annotations</artifactId>
-				<version>3.6.0</version>
-			</dependency>
-			<!-- https://mvnrepository.com/artifact/org.apache.maven.plugin-tools/maven-plugin-tools-java -->
-			<dependency>
-				<groupId>org.apache.maven.plugin-tools</groupId>
-				<artifactId>maven-plugin-tools-java</artifactId>
 				<version>3.6.0</version>
 			</dependency>
 			<!-- https://mvnrepository.com/artifact/org.apache.maven.reporting/maven-reporting-api -->
@@ -193,6 +181,12 @@
 				<groupId>org.apache.maven.shared</groupId>
 				<artifactId>maven-shared-utils</artifactId>
 				<version>3.2.1</version>
+			</dependency>
+			<!-- https://mvnrepository.com/artifact/org.apache.maven.wagon/wagon-provider-api -->
+			<dependency>
+			    <groupId>org.apache.maven.wagon</groupId>
+			    <artifactId>wagon-provider-api</artifactId>
+			    <version>3.4.1</version>
 			</dependency>
 			<!-- https://mvnrepository.com/artifact/org.apache.velocity/velocity -->
 			<dependency>
@@ -255,25 +249,42 @@
 				<artifactId>aether-api</artifactId>
 				<version>1.11</version>
 			</dependency>
+			<!-- https://mvnrepository.com/artifact/org.sonatype.plexus/plexus-cipher -->
+			<dependency>
+				<groupId>org.sonatype.plexus</groupId>
+				<artifactId>plexus-cipher</artifactId>
+				<version>1.7</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 	
 	<dependencies>
 
 		<!-- https://mvnrepository.com/artifact/org.apache.maven/maven-compat -->
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.apache.maven</groupId> -->
+<!-- 			<artifactId>maven-compat</artifactId> -->
+<!-- 		</dependency> -->
+		
+		<!-- https://mvnrepository.com/artifact/org.apache.maven/maven-archiver -->
 		<dependency>
 			<groupId>org.apache.maven</groupId>
-			<artifactId>maven-compat</artifactId>
+			<artifactId>maven-archiver</artifactId>
+			<version>3.5.0</version>
 		</dependency>
-		
+
+		<!-- https://mvnrepository.com/artifact/org.apache.maven/maven-embedder -->
 		<dependency>
 			<groupId>org.apache.maven</groupId>
 			<artifactId>maven-embedder</artifactId>
+			<version>3.6.3</version>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/org.apache.maven/maven-plugin-api -->
 		<dependency>
 			<groupId>org.apache.maven</groupId>
 			<artifactId>maven-plugin-api</artifactId>
+			<version>3.6.3</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-help-plugin -->
@@ -283,14 +294,52 @@
 			<version>3.2.0</version>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/org.apache.maven.plugin-tools/maven-plugin-tools-annotations -->
 		<dependency>
 			<groupId>org.apache.maven.plugin-tools</groupId>
 			<artifactId>maven-plugin-tools-annotations</artifactId>
+			<version>3.6.0</version>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/org.apache.maven.plugin-tools/maven-plugin-tools-java -->
 		<dependency>
 			<groupId>org.apache.maven.plugin-tools</groupId>
 			<artifactId>maven-plugin-tools-java</artifactId>
+			<version>3.6.0</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.maven.resolver/maven-resolver-connector-basic -->
+		<dependency>
+			<groupId>org.apache.maven.resolver</groupId>
+			<artifactId>maven-resolver-connector-basic</artifactId>
+			<version>1.4.2</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.maven.resolver/maven-resolver-transport-wagon -->
+		<dependency>
+			<groupId>org.apache.maven.resolver</groupId>
+			<artifactId>maven-resolver-transport-wagon</artifactId>
+			<version>1.4.2</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.maven.shared/file-management -->
+		<dependency>
+			<groupId>org.apache.maven.shared</groupId>
+			<artifactId>file-management</artifactId>
+			<version>3.0.0</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.maven</groupId>
+					<artifactId>maven-plugin-api</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.maven.wagon/wagon-http -->
+		<dependency>
+		    <groupId>org.apache.maven.wagon</groupId>
+		    <artifactId>wagon-http</artifactId>
+		    <version>3.4.1</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter -->
@@ -300,10 +349,10 @@
 			<version>5.6.2</version>
 		</dependency>
 
-		<dependency>
-			<groupId>org.sonatype.aether</groupId>
-			<artifactId>aether-api</artifactId>
-		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.sonatype.aether</groupId> -->
+<!-- 			<artifactId>aether-api</artifactId> -->
+<!-- 		</dependency> -->
 
 		<!-- TEST DEPENDENCIES -->
 

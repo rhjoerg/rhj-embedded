@@ -10,6 +10,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.maven.model.Model;
+import org.apache.maven.model.Parent;
 import org.apache.maven.model.io.ModelReader;
 
 @Named
@@ -36,6 +37,7 @@ public class ModelRepository
 			try (InputStream input = pomUrl.openStream())
 			{
 				model = reader.read(input, options);
+				populate(model);
 				models.put(pomUrl, model);
 			}
 		}
@@ -52,5 +54,23 @@ public class ModelRepository
 		model.setPomFile(pomPath.toFile());
 
 		return model;
+	}
+
+	private void populate(Model model)
+	{
+		Parent parent = model.getParent();
+
+		if (parent != null)
+		{
+			if (model.getGroupId() == null)
+			{
+				model.setGroupId(parent.getGroupId());
+			}
+
+			if (model.getVersion() == null)
+			{
+				model.setVersion(parent.getVersion());
+			}
+		}
 	}
 }

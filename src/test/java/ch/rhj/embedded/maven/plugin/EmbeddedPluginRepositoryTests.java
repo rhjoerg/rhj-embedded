@@ -1,4 +1,4 @@
-package ch.rhj.embedded.maven.repository;
+package ch.rhj.embedded.maven.plugin;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 

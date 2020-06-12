@@ -32,6 +32,11 @@ public class ProjectWorkspaceReader implements MavenWorkspaceReader
 		repository = new WorkspaceRepository("project", Set.of(project.getId()));
 	}
 
+	public String getUrl()
+	{
+		return "project:///" + project.getId().replace(':', '/');
+	}
+
 	@Override
 	public WorkspaceRepository getRepository()
 	{
@@ -43,7 +48,9 @@ public class ProjectWorkspaceReader implements MavenWorkspaceReader
 	{
 		if (ArtifactIdUtils.equalsId(this.artifact, artifact))
 		{
-			return new File(project.getBuild().getOutputDirectory());
+			File basedir = project.getBasedir();
+
+			return new File(basedir, project.getBuild().getOutputDirectory());
 		}
 
 		return null;
