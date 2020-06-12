@@ -1,4 +1,4 @@
-package ch.rhj.embedded.maven.project;
+package ch.rhj.embedded.maven.factory;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -25,7 +25,7 @@ public class ModelFactory
 		this.reader = reader;
 	}
 
-	public Model create(URL pomUrl) throws Exception
+	public Model createModel(URL pomUrl) throws Exception
 	{
 		try (InputStream input = pomUrl.openStream())
 		{
@@ -41,7 +41,7 @@ public class ModelFactory
 	{
 		pomPath = pomPath.toAbsolutePath().normalize();
 
-		Model model = create(pomPath.toUri().toURL());
+		Model model = createModel(pomPath.toUri().toURL());
 
 		model.setPomFile(pomPath.toFile());
 

@@ -10,17 +10,17 @@ import org.apache.maven.Maven;
 import org.apache.maven.execution.MavenExecutionRequest;
 import org.apache.maven.execution.MavenExecutionResult;
 
-import ch.rhj.embedded.maven.build.RequestFactory;
+import ch.rhj.embedded.maven.factory.ExecutionRequestFactory;
 
 @Named
 public class Builder
 {
 	private final Maven maven;
 
-	private final RequestFactory requestFactory;
+	private final ExecutionRequestFactory requestFactory;
 
 	@Inject
-	public Builder(Maven maven, RequestFactory requestFactory) throws Exception
+	public Builder(Maven maven, ExecutionRequestFactory requestFactory) throws Exception
 	{
 		this.maven = maven;
 		this.requestFactory = requestFactory;

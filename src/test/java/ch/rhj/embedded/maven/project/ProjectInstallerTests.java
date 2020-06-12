@@ -16,6 +16,7 @@ import org.apache.maven.project.MavenProject;
 import org.junit.jupiter.api.Test;
 
 import ch.rhj.embedded.maven.WithMaven;
+import ch.rhj.embedded.maven.factory.ArtifactFactory;
 
 @WithMaven
 public class ProjectInstallerTests
@@ -42,7 +43,7 @@ public class ProjectInstallerTests
 	{
 		MavenProject project = archiver.archive(EMBEDDED_POM, STAGING_PATH);
 		ArtifactRepository repository = installer.install(project, REPOSITORY_PATH);
-		Artifact artifact = factory.create(project);
+		Artifact artifact = factory.createArtifact(project);
 
 		artifact = repository.find(artifact);
 

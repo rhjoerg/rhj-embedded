@@ -1,4 +1,4 @@
-package ch.rhj.embedded.maven.build;
+package ch.rhj.embedded.maven.factory;
 
 import static java.util.stream.Collectors.toSet;
 

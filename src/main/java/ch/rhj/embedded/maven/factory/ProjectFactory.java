@@ -1,4 +1,4 @@
-package ch.rhj.embedded.maven.project;
+package ch.rhj.embedded.maven.factory;
 
 import static java.util.Optional.ofNullable;
 
@@ -52,7 +52,7 @@ public class ProjectFactory
 	private void populateProject(MavenProject project)
 	{
 		File pomFile = project.getModel().getPomFile();
-		Artifact artifact = artifactFactory.create(project);
+		Artifact artifact = artifactFactory.createArtifact(project);
 
 		project.setPomFile(pomFile);
 		project.setArtifact(artifact);

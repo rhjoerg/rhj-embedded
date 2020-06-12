@@ -28,16 +28,17 @@ import org.junit.jupiter.api.Test;
 
 import ch.rhj.embedded.maven.WithMaven;
 import ch.rhj.embedded.maven.build.MavenSessions;
-import ch.rhj.embedded.maven.build.RequestFactory;
+import ch.rhj.embedded.maven.factory.ExecutionRequestFactory;
+import ch.rhj.embedded.maven.factory.ProjectFactory;
 
 @WithMaven
 public class ProjectWorkspaceReaderTests
 {
 	@Inject
-	private RequestFactory requestFactory;
+	private ExecutionRequestFactory requestFactory;
 
 	@Inject
-	private ProjectRepository projectRepository;
+	private ProjectFactory projectFactory;
 
 	@Inject
 	private ArtifactInstaller artifactInstaller;
@@ -58,7 +59,7 @@ public class ProjectWorkspaceReaderTests
 		Path targetPath = EMBEDDED_BASEDIR.resolve("target");
 		Path stagingPath = targetPath.resolve("project-repository-staging");
 		Path repositoryPath = targetPath.resolve("project-repository");
-		MavenProject project = projectRepository.get(EMBEDDED_POM);
+		MavenProject project = projectFactory.create(EMBEDDED_POM);
 		Artifact artifact = project.getArtifact();
 
 		File classesDirecory = targetPath.resolve("classes").toFile();
@@ -81,8 +82,7 @@ public class ProjectWorkspaceReaderTests
 		String url = repositoryPath.toUri().toURL().toString();
 		ArtifactRepositoryPolicy policy = new ArtifactRepositoryPolicy(true, UPDATE_POLICY_ALWAYS, CHECKSUM_POLICY_IGNORE);
 		MavenArtifactRepository repository = new MavenArtifactRepository("project", url, layout, policy, policy);
-		String[] goals = {};
-		MavenExecutionRequest executionRequest = requestFactory.createExecutionRequest(EMBEDDED_POM, goals);
+		MavenExecutionRequest executionRequest = requestFactory.createExecutionRequest(project);
 
 		mavenSessions.run(executionRequest, mavenSession ->
 		{

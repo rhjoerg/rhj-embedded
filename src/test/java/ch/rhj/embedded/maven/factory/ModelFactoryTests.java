@@ -1,4 +1,4 @@
-package ch.rhj.embedded.maven.project;
+package ch.rhj.embedded.maven.factory;
 
 import static ch.rhj.embedded.maven.MavenTestsConstants.EMBEDDED_ID;
 import static ch.rhj.embedded.maven.MavenTestsConstants.EMBEDDED_POM;

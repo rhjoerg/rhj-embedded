@@ -1,80 +1,58 @@
 package ch.rhj.embedded.maven.repository;
 
 import java.io.File;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.apache.maven.RepositoryUtils;
 import org.apache.maven.model.Model;
-import org.apache.maven.project.MavenProject;
-import org.apache.maven.project.artifact.ProjectArtifact;
 import org.apache.maven.repository.internal.MavenWorkspaceReader;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.repository.WorkspaceRepository;
-import org.eclipse.aether.util.artifact.ArtifactIdUtils;
+
+import ch.rhj.embedded.maven.project.ProjectRepository;
 
 @Named("reactor")
 public class ProjectWorkspaceReader implements MavenWorkspaceReader
 {
-	private final MavenProject project;
-	private final Artifact artifact;
-	private final WorkspaceRepository repository;
+	private final ProjectRepository projectRepository;
+	private final WorkspaceRepository workspaceRepository;
 
 	@Inject
 	public ProjectWorkspaceReader(ProjectRepository projectRepository) throws Exception
 	{
-		project = projectRepository.get(Paths.get("pom.xml"));
-		artifact = RepositoryUtils.toArtifact(new ProjectArtifact(project));
-		repository = new WorkspaceRepository("project", Set.of(project.getId()));
+		this.projectRepository = projectRepository;
+		this.workspaceRepository = new WorkspaceRepository("reactor", Set.of());
 	}
 
 	public String getUrl()
 	{
-		return "project:///" + project.getId().replace(':', '/');
+		return projectRepository.getUrl();
 	}
 
 	@Override
 	public WorkspaceRepository getRepository()
 	{
-		return repository;
+		return workspaceRepository;
 	}
 
 	@Override
 	public File findArtifact(Artifact artifact)
 	{
-		if (ArtifactIdUtils.equalsId(this.artifact, artifact))
-		{
-			File basedir = project.getBasedir();
-
-			return new File(basedir, project.getBuild().getOutputDirectory());
-		}
-
 		return null;
 	}
 
 	@Override
 	public List<String> findVersions(Artifact artifact)
 	{
-		if (ArtifactIdUtils.equalsVersionlessId(this.artifact, artifact))
-		{
-			return List.of(this.artifact.getVersion());
-		}
-
 		return List.of();
 	}
 
 	@Override
 	public Model findModel(Artifact artifact)
 	{
-		if (ArtifactIdUtils.equalsId(this.artifact, artifact))
-		{
-			return project.getModel();
-		}
-
 		return null;
 	}
 }

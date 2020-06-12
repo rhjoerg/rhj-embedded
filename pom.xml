@@ -92,6 +92,12 @@
 				<artifactId>maven-model</artifactId>
 				<version>3.6.3</version>
 			</dependency>
+			<!-- https://mvnrepository.com/artifact/org.apache.maven/maven-plugin-api -->
+			<dependency>
+				<groupId>org.apache.maven</groupId>
+				<artifactId>maven-plugin-api</artifactId>
+				<version>3.6.3</version>
+			</dependency>
 			<!-- https://mvnrepository.com/artifact/org.apache.maven/maven-settings -->
 			<dependency>
 				<groupId>org.apache.maven</groupId>
@@ -193,6 +199,12 @@
 				<groupId>org.apache.velocity</groupId>
 				<artifactId>velocity</artifactId>
 				<version>1.7</version>
+			</dependency>
+			<!-- https://mvnrepository.com/artifact/org.codehaus.plexus/plexus-archiver -->
+			<dependency>
+				<groupId>org.codehaus.plexus</groupId>
+				<artifactId>plexus-archiver</artifactId>
+				<version>4.2.2</version>
 			</dependency>
 			<!-- https://mvnrepository.com/artifact/org.codehaus.plexus/plexus-classworlds -->
 			<dependency>
@@ -333,6 +345,13 @@
 					<artifactId>maven-plugin-api</artifactId>
 				</exclusion>
 			</exclusions>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.maven.wagon/wagon-file -->
+		<dependency>
+			<groupId>org.apache.maven.wagon</groupId>
+			<artifactId>wagon-file</artifactId>
+			<version>3.4.1</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.apache.maven.wagon/wagon-http -->

@@ -22,7 +22,8 @@ import org.codehaus.plexus.archiver.jar.JarArchiver;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
 
 import ch.rhj.embedded.maven.build.MavenSessions;
-import ch.rhj.embedded.maven.build.RequestFactory;
+import ch.rhj.embedded.maven.factory.ExecutionRequestFactory;
+import ch.rhj.embedded.maven.factory.ProjectFactory;
 
 @Named
 public class ProjectArchiver
@@ -36,13 +37,13 @@ public class ProjectArchiver
 
 	private final ArchiverManager archiverManager;
 
-	private final RequestFactory requestFactory;
+	private final ExecutionRequestFactory requestFactory;
 
 	private final MavenSessions mavenSessions;
 
 	@Inject
 	public ProjectArchiver(ProjectFactory projectFactory, ArtifactHandlerManager artifactHandlerManager, ArchiverManager archiverManager,
-			RequestFactory requestFactory, MavenSessions mavenSessions)
+			ExecutionRequestFactory requestFactory, MavenSessions mavenSessions)
 	{
 		this.projectFactory = projectFactory;
 		this.artifactHandlerManager = artifactHandlerManager;
@@ -75,7 +76,7 @@ public class ProjectArchiver
 	{
 		try
 		{
-			MavenExecutionRequest request = createExecutionRequest(project);
+			MavenExecutionRequest request = requestFactory.createExecutionRequest(project);
 
 			mavenSessions.run(request, session -> archive(project, archiver, configuration, session));
 		}
@@ -154,14 +155,6 @@ public class ProjectArchiver
 		configuration.setForced(true);
 
 		return configuration;
-	}
-
-	private MavenExecutionRequest createExecutionRequest(MavenProject project) throws Exception
-	{
-		Path pomPath = project.getFile().toPath();
-		String[] goals = {};
-
-		return requestFactory.createExecutionRequest(pomPath, goals);
 	}
 
 	private String getExtension(MavenProject project)
