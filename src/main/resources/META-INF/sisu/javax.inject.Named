@@ -4,6 +4,7 @@ ch.rhj.embedded.maven.build.ProjectArchiver
 ch.rhj.embedded.maven.build.ProjectInstaller
 ch.rhj.embedded.maven.build.ProjectRepository
 ch.rhj.embedded.maven.build.ProjectWorkspaceReader
+ch.rhj.embedded.maven.build.RepositorySessionRunner
 ch.rhj.embedded.maven.factory.ArtifactFactory
 ch.rhj.embedded.maven.factory.ExecutionRequestFactory
 ch.rhj.embedded.maven.factory.LayoutProvider

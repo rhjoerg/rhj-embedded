@@ -2,6 +2,7 @@ package ch.rhj.embedded.maven.build;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -36,14 +37,9 @@ public class ProjectInstaller
 
 	public void install(MavenProject project, ArtifactRepository repository) throws Exception
 	{
-		Artifact jarArtifact = project.getArtifact();
-		Artifact pomArtifact = createPomArtifact(project);
+		Context context = new Context(project, artifactFactory);
 
-		File jarSource = jarArtifact.getFile();
-		File pomSource = pomArtifact.getFile();
-
-		sessionRunner.run(project, session -> install(jarSource, jarArtifact, repository));
-		sessionRunner.run(project, session -> install(pomSource, pomArtifact, repository));
+		sessionRunner.run(project, session -> install(context, repository));
 	}
 
 	public ArtifactRepository install(MavenProject project, String id, Path repositoryPath) throws Exception
@@ -55,11 +51,16 @@ public class ProjectInstaller
 		return repository;
 	}
 
-	private void install(File source, Artifact artifact, ArtifactRepository repository)
+	private void install(Context context, ArtifactRepository repository)
 	{
 		try
 		{
-			artifactInstaller.install(source, artifact, repository);
+			for (Artifact artifact : context.artifacts())
+			{
+				File source = artifact.getFile();
+
+				artifactInstaller.install(source, artifact, repository);
+			}
 		}
 		catch (Exception e)
 		{
@@ -67,16 +68,33 @@ public class ProjectInstaller
 		}
 	}
 
-	private Artifact createPomArtifact(MavenProject project)
+	public static class Context
 	{
-		String groupId = project.getGroupId();
-		String artifactId = project.getArtifactId();
-		String version = project.getVersion();
-		String packaging = "pom";
-		Artifact artifact = artifactFactory.createArtifact(groupId, artifactId, version, packaging);
+		private final Artifact jarArtifact;
+		private final Artifact pomArtifact;
 
-		artifact.setFile(project.getFile());
+		public Context(MavenProject project, ArtifactFactory artifactFactory)
+		{
+			this.jarArtifact = project.getArtifact();
+			this.pomArtifact = createPomArtifact(project, artifactFactory);
+		}
 
-		return artifact;
+		public List<Artifact> artifacts()
+		{
+			return List.of(jarArtifact, pomArtifact);
+		}
+
+		private static Artifact createPomArtifact(MavenProject project, ArtifactFactory artifactFactory)
+		{
+			String groupId = project.getGroupId();
+			String artifactId = project.getArtifactId();
+			String version = project.getVersion();
+			String packaging = "pom";
+			Artifact artifact = artifactFactory.createArtifact(groupId, artifactId, version, packaging);
+
+			artifact.setFile(project.getFile());
+
+			return artifact;
+		}
 	}
 }

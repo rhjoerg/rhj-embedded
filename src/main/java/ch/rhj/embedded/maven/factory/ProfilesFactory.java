@@ -2,11 +2,13 @@ package ch.rhj.embedded.maven.factory;
 
 import static java.util.stream.Collectors.toSet;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.maven.settings.Profile;
@@ -15,6 +17,14 @@ import org.apache.maven.settings.Settings;
 @Named
 public class ProfilesFactory
 {
+	private final SettingsFactory settingsFactory;
+
+	@Inject
+	public ProfilesFactory(SettingsFactory settingsFactory)
+	{
+		this.settingsFactory = settingsFactory;
+	}
+
 	public List<Profile> activeProfiles(Settings settings)
 	{
 		List<Profile> activeByDefaultProfiles = activeByDefaultProfiles(settings);
@@ -26,6 +36,13 @@ public class ProfilesFactory
 		result.addAll(activatedProfiles);
 
 		return result;
+	}
+
+	public List<Profile> activeProfiles(Path pomPath) throws Exception
+	{
+		Settings settings = settingsFactory.createSettings(pomPath);
+
+		return activeProfiles(settings);
 	}
 
 	private List<Profile> activeByDefaultProfiles(Settings settings)
