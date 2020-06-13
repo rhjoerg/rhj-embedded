@@ -7,26 +7,23 @@ import static ch.rhj.embedded.maven.MavenTestsConstants.PLUGIN_POM;
 import static ch.rhj.embedded.maven.MavenTestsConstants.TARGET_ID;
 import static ch.rhj.embedded.maven.MavenTestsConstants.TARGET_POM;
 import static java.util.stream.Collectors.toList;
-import static org.apache.maven.settings.SettingsUtils.convertFromSettingsProfile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import org.apache.maven.RepositoryUtils;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Profile;
 import org.apache.maven.model.building.DefaultModelBuildingRequest;
 import org.apache.maven.model.building.ModelBuilder;
-import org.apache.maven.model.building.ModelBuildingRequest;
 import org.apache.maven.model.building.ModelBuildingResult;
 import org.apache.maven.model.resolution.ModelResolver;
 import org.apache.maven.project.ProjectBuildingRequest.RepositoryMerging;
 import org.apache.maven.project.ProjectModelResolver;
+import org.apache.maven.settings.Settings;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.RequestTrace;
@@ -35,14 +32,17 @@ import org.eclipse.aether.repository.RemoteRepository;
 import org.junit.jupiter.api.Test;
 
 import ch.rhj.embedded.maven.WithMaven;
-import ch.rhj.embedded.maven.build.ProjectRepository;
 import ch.rhj.embedded.maven.build.RepositorySessionRunner;
+import ch.rhj.embedded.maven.factory.repository.RepositoryFactory;
 
 @WithMaven
 public class ModelFactoryTests
 {
 	@Inject
 	private ModelFactory modelFactory;
+
+	@Inject
+	private SettingsFactory settingsFactory;
 
 	@Inject
 	private ProfilesFactory profilesFactory;
@@ -58,9 +58,6 @@ public class ModelFactoryTests
 
 	@Inject
 	private RemoteRepositoryManager repositoryManager;
-
-	@Inject
-	private ProjectRepository projectRepository;
 
 	@Inject
 	private RepositoryFactory repositoryFactory;
@@ -95,18 +92,20 @@ public class ModelFactoryTests
 	@Test
 	public void testModelBuilder() throws Exception
 	{
+		Path pomPath = EMBEDDED_POM;
+
 		DefaultModelBuildingRequest request = new DefaultModelBuildingRequest();
-		List<Profile> activeProfiles = createActiveProfiles(EMBEDDED_POM);
+		Settings settings = settingsFactory.createSettings(pomPath);
+
+		List<Profile> activeProfiles = profilesFactory.createModelProfiles(settings);
 		List<String> activeProfileIds = activeProfiles.stream().map(p -> p.getId()).collect(toList());
 
-		request.setPomFile(EMBEDDED_POM.toFile());
-		request.setValidationLevel(ModelBuildingRequest.VALIDATION_LEVEL_STRICT);
+		request.setPomFile(pomPath.toFile());
 		request.setProcessPlugins(true);
-		request.setTwoPhaseBuilding(true);
 		request.setProfiles(activeProfiles);
 		request.setActiveProfileIds(activeProfileIds);
 		request.setSystemProperties(propertiesFactory.createSystemProperties());
-		request.setUserProperties(propertiesFactory.createUserProperties(EMBEDDED_POM));
+		request.setUserProperties(propertiesFactory.createUserProperties(pomPath));
 
 		sessionRunner.run(session ->
 		{
@@ -114,7 +113,7 @@ public class ModelFactoryTests
 
 			try
 			{
-				request.setModelResolver(createModelResolver(EMBEDDED_POM, session));
+				request.setModelResolver(createModelResolver(settings, session));
 				result = builder.build(request);
 			}
 			catch (Exception e)
@@ -129,34 +128,14 @@ public class ModelFactoryTests
 				fail();
 			}
 
-		}, EMBEDDED_POM);
+		}, pomPath);
 	}
 
-	private ModelResolver createModelResolver(Path pomPath, RepositorySystemSession session) throws Exception
+	private ModelResolver createModelResolver(Settings settings, RepositorySystemSession session) throws Exception
 	{
 		RequestTrace trace = new RequestTrace(null);
-		List<RemoteRepository> repositories = createRemoteRepositories(pomPath);
+		List<RemoteRepository> repositories = repositoryFactory.createRepositories(settings).aetherRepositories();
 
 		return new ProjectModelResolver(session, trace, repositorySystem, repositoryManager, repositories, RepositoryMerging.REQUEST_DOMINANT, null);
-	}
-
-	private List<RemoteRepository> createRemoteRepositories(Path pomPath) throws Exception
-	{
-		List<RemoteRepository> repositories = new ArrayList<>();
-
-		repositories.add(RepositoryUtils.toRepo(projectRepository));
-
-		repositoryFactory.createRepositories(profilesFactory.activeProfiles(pomPath)).stream() //
-				.map(r -> RepositoryUtils.toRepo(r)) //
-				.forEach(r -> repositories.add(r));
-
-		return repositories;
-	}
-
-	private List<Profile> createActiveProfiles(Path pomPath) throws Exception
-	{
-		return profilesFactory.activeProfiles(pomPath).stream() //
-				.map(p -> convertFromSettingsProfile(p)) //
-				.collect(toList());
 	}
 }

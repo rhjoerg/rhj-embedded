@@ -1,51 +1,68 @@
-package ch.rhj.embedded.maven.factory;
+package ch.rhj.embedded.maven.factory.repository;
 
-import static java.util.stream.Collectors.toList;
-import static org.apache.maven.artifact.repository.ArtifactRepositoryPolicy.CHECKSUM_POLICY_IGNORE;
-import static org.apache.maven.artifact.repository.ArtifactRepositoryPolicy.UPDATE_POLICY_ALWAYS;
 import static org.apache.maven.bridge.MavenRepositorySystem.fromSettingsRepository;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.apache.maven.artifact.InvalidRepositoryException;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryPolicy;
 import org.apache.maven.artifact.repository.MavenArtifactRepository;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 import org.apache.maven.model.Repository;
 import org.apache.maven.repository.RepositorySystem;
-import org.apache.maven.settings.Profile;
 import org.apache.maven.settings.Settings;
+import org.codehaus.plexus.PlexusContainer;
+
+import ch.rhj.embedded.maven.build.ProjectRepository;
+import ch.rhj.embedded.maven.factory.LayoutProvider;
+import ch.rhj.embedded.maven.factory.ProfilesFactory;
 
 @Named
 public class RepositoryFactory
 {
+	private final PlexusContainer container;
 	private final RepositorySystem repositorySystem;
+
+	private final ProfilesFactory profileFactory;
+
 	private final LayoutProvider layoutProvider;
 
 	@Inject
-	public RepositoryFactory(RepositorySystem repositorySystem, LayoutProvider layoutProvider)
+	public RepositoryFactory(PlexusContainer container, RepositorySystem repositorySystem, ProfilesFactory profileFactory, LayoutProvider layoutProvider)
 	{
+		this.container = container;
 		this.repositorySystem = repositorySystem;
+		this.profileFactory = profileFactory;
 		this.layoutProvider = layoutProvider;
 	}
 
-	public String createUrl(Path repositoryPath) throws Exception
+	public RepositoryResult createRepositories(Settings settings) throws Exception
 	{
-		return repositoryPath.toAbsolutePath().normalize().toUri().toURL().toString();
+		ArtifactRepository localRepository = createLocalRepository(settings);
+		ProjectRepository projectRepository = container.lookup(ProjectRepository.class);
+		RepositoryResult result = new RepositoryResult(settings, localRepository, projectRepository);
+
+		try
+		{
+			profileFactory.createSettingsProfiles(settings).stream() //
+					.flatMap(p -> p.getRepositories().stream()) //
+					.map(r -> fromSettingsRepository(r)) //
+					.map(this::createRepository) //
+					.forEach(r -> result.addRemoteRepository(r));
+		}
+		catch (RuntimeException e)
+		{
+			throw Exception.class.cast(e.getCause());
+		}
+
+		return result;
 	}
 
-	public ArtifactRepositoryPolicy createPolicy()
-	{
-		return new ArtifactRepositoryPolicy(true, UPDATE_POLICY_ALWAYS, CHECKSUM_POLICY_IGNORE);
-	}
-
-	public ArtifactRepository createLocalRepository(Settings settings) throws Exception
+	private ArtifactRepository createLocalRepository(Settings settings) throws Exception
 	{
 		String name = settings.getLocalRepository();
 
@@ -59,31 +76,22 @@ public class RepositoryFactory
 		}
 	}
 
-	public ArtifactRepository createRepository(Repository repository)
+	private ArtifactRepository createRepository(Repository repository)
 	{
 		try
 		{
 			return repositorySystem.buildArtifactRepository(repository);
 		}
-		catch (InvalidRepositoryException e)
+		catch (Exception e)
 		{
 			throw new RuntimeException(e);
 		}
 	}
 
-	public List<ArtifactRepository> createRepositories(List<Profile> profiles)
-	{
-		return profiles.stream() //
-				.flatMap(p -> p.getRepositories().stream()) //
-				.map(r -> fromSettingsRepository(r)) //
-				.map(this::createRepository) //
-				.collect(toList());
-	}
-
 	public MavenArtifactRepository createRepository(String id, Path repositoryPath, ArtifactRepositoryLayout layout, ArtifactRepositoryPolicy snapshots,
 			ArtifactRepositoryPolicy releases) throws Exception
 	{
-		String url = createUrl(repositoryPath);
+		String url = repositoryPath.toAbsolutePath().normalize().toUri().toURL().toString();
 
 		return new MavenArtifactRepository(id, url, layout, snapshots, releases);
 	}
@@ -91,7 +99,7 @@ public class RepositoryFactory
 	public MavenArtifactRepository createRepository(String id, Path repositoryPath) throws Exception
 	{
 		ArtifactRepositoryLayout layout = layoutProvider.getDefaultLayout();
-		ArtifactRepositoryPolicy policy = createPolicy();
+		ArtifactRepositoryPolicy policy = RepositoryPolicies.createDefaultPolicy();
 
 		return createRepository(id, repositoryPath, layout, policy, policy);
 	}

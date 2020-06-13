@@ -10,7 +10,7 @@ import org.apache.maven.execution.MavenExecutionRequest;
 import org.eclipse.aether.DefaultRepositorySystemSession;
 
 import ch.rhj.embedded.maven.factory.ExecutionRequestFactory;
-import ch.rhj.embedded.maven.factory.RepositorySessionFactory;
+import ch.rhj.embedded.maven.factory.repository.RepositorySessionFactory;
 
 @Named
 public class RepositorySessionRunner

@@ -1,5 +1,7 @@
 package ch.rhj.embedded.maven.build;
 
+import static ch.rhj.embedded.maven.factory.repository.RepositoryPolicies.createDefaultPolicy;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
@@ -8,13 +10,10 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.apache.maven.artifact.repository.ArtifactRepositoryPolicy;
 import org.apache.maven.artifact.repository.MavenArtifactRepository;
-import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 import org.apache.maven.project.MavenProject;
 
 import ch.rhj.embedded.maven.factory.LayoutProvider;
-import ch.rhj.embedded.maven.factory.RepositoryFactory;
 
 @Named
 public class ProjectRepository extends MavenArtifactRepository
@@ -30,16 +29,9 @@ public class ProjectRepository extends MavenArtifactRepository
 	private final ProjectInstaller installer;
 
 	@Inject
-	public ProjectRepository(RepositoryFactory repositoryFactory, LayoutProvider layoutProvider, ProjectArchiver archiver, ProjectInstaller installer)
-			throws Exception
+	public ProjectRepository(LayoutProvider layoutProvider, ProjectArchiver archiver, ProjectInstaller installer) throws Exception
 	{
-		this(repositoryFactory.createUrl(REPOSITORY_PATH), layoutProvider.getDefaultLayout(), repositoryFactory.createPolicy(), archiver, installer);
-	}
-
-	private ProjectRepository(String url, ArtifactRepositoryLayout layout, ArtifactRepositoryPolicy policy, ProjectArchiver archiver,
-			ProjectInstaller installer)
-	{
-		super(ID, url, layout, policy, policy);
+		super(ID, url(), layoutProvider.getDefaultLayout(), createDefaultPolicy(), createDefaultPolicy());
 
 		this.archiver = archiver;
 		this.installer = installer;
@@ -58,5 +50,10 @@ public class ProjectRepository extends MavenArtifactRepository
 
 		installer.install(project, this);
 		installed.add(pomPath);
+	}
+
+	private static String url() throws Exception
+	{
+		return REPOSITORY_PATH.toAbsolutePath().normalize().toUri().toURL().toString();
 	}
 }

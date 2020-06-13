@@ -13,7 +13,7 @@ import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.project.MavenProject;
 
 import ch.rhj.embedded.maven.factory.ArtifactFactory;
-import ch.rhj.embedded.maven.factory.RepositoryFactory;
+import ch.rhj.embedded.maven.factory.repository.RepositoryFactory;
 
 @Named
 public class ProjectInstaller

@@ -1,4 +1,4 @@
-package ch.rhj.embedded.maven.factory;
+package ch.rhj.embedded.maven.factory.repository;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -7,6 +7,8 @@ import org.apache.maven.execution.MavenExecutionRequest;
 import org.apache.maven.internal.aether.DefaultRepositorySystemSessionFactory;
 import org.apache.maven.project.MavenProject;
 import org.eclipse.aether.DefaultRepositorySystemSession;
+
+import ch.rhj.embedded.maven.factory.ExecutionRequestFactory;
 
 @Named
 public class RepositorySessionFactory

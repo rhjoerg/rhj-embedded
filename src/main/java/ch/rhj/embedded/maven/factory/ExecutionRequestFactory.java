@@ -6,26 +6,23 @@ import static org.apache.maven.settings.SettingsUtils.convertFromSettingsProfile
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.execution.DefaultMavenExecutionRequest;
 import org.apache.maven.execution.MavenExecutionRequestPopulator;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.settings.Profile;
 import org.apache.maven.settings.Settings;
-import org.codehaus.plexus.PlexusContainer;
 
-import ch.rhj.embedded.maven.build.ProjectRepository;
+import ch.rhj.embedded.maven.factory.repository.RepositoryFactory;
+import ch.rhj.embedded.maven.factory.repository.RepositoryResult;
 
 @Named
 public class ExecutionRequestFactory
 {
-	private final PlexusContainer container;
 	private final PropertiesFactory propertiesFactory;
 	private final PathFactory pathFactory;
 	private final SettingsFactory settingsFactory;
@@ -34,10 +31,9 @@ public class ExecutionRequestFactory
 	private final MavenExecutionRequestPopulator requestPopulator;
 
 	@Inject
-	public ExecutionRequestFactory(PlexusContainer container, PropertiesFactory propertiesFactory, PathFactory pathFactory, SettingsFactory settingsFactory,
+	public ExecutionRequestFactory(PropertiesFactory propertiesFactory, PathFactory pathFactory, SettingsFactory settingsFactory,
 			ProfilesFactory profilesFactory, RepositoryFactory repositoryFactory, MavenExecutionRequestPopulator requestPopulator)
 	{
-		this.container = container;
 		this.propertiesFactory = propertiesFactory;
 		this.pathFactory = pathFactory;
 		this.settingsFactory = settingsFactory;
@@ -64,7 +60,7 @@ public class ExecutionRequestFactory
 	private void populate(DefaultMavenExecutionRequest request, Path pomPath, String[] goals) throws Exception
 	{
 		Settings settings = settingsFactory.createSettings(pomPath);
-		List<Profile> profiles = profilesFactory.activeProfiles(settings);
+		List<Profile> profiles = profilesFactory.createSettingsProfiles(settings);
 
 		populateCommons(request, pomPath, goals);
 		populateFromSettings(request, settings);
@@ -110,20 +106,10 @@ public class ExecutionRequestFactory
 
 	private void populateRepositories(DefaultMavenExecutionRequest request, Settings settings, List<Profile> profiles) throws Exception
 	{
-		ArtifactRepository localRepository = repositoryFactory.createLocalRepository(settings);
-		List<ArtifactRepository> remoteRepositories = new ArrayList<>();
-		List<ArtifactRepository> pluginArtifactRepositories = new ArrayList<>();
-		ProjectRepository projectRepository = container.lookup(ProjectRepository.class);
+		RepositoryResult repositories = repositoryFactory.createRepositories(settings);
 
-		remoteRepositories.add(projectRepository);
-		remoteRepositories.addAll(repositoryFactory.createRepositories(profiles));
-
-		pluginArtifactRepositories.add(projectRepository);
-		pluginArtifactRepositories.add(localRepository);
-		pluginArtifactRepositories.addAll(remoteRepositories);
-
-		request.setLocalRepository(localRepository);
-		request.setRemoteRepositories(remoteRepositories);
-		request.setPluginArtifactRepositories(pluginArtifactRepositories);
+		request.setLocalRepository(repositories.localRepository());
+		request.setRemoteRepositories(repositories.remoteRepositories());
+		request.setPluginArtifactRepositories(repositories.pluginRepositories());
 	}
 }

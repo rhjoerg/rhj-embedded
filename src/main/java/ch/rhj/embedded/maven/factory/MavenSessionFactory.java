@@ -11,6 +11,8 @@ import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.PlexusContainer;
 import org.eclipse.aether.RepositorySystemSession;
 
+import ch.rhj.embedded.maven.factory.repository.RepositorySessionFactory;
+
 @Named
 public class MavenSessionFactory
 {

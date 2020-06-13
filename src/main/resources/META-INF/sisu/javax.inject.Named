@@ -14,7 +14,7 @@ ch.rhj.embedded.maven.factory.PathFactory
 ch.rhj.embedded.maven.factory.ProfilesFactory
 ch.rhj.embedded.maven.factory.ProjectFactory
 ch.rhj.embedded.maven.factory.PropertiesFactory
-ch.rhj.embedded.maven.factory.RepositoryFactory
-ch.rhj.embedded.maven.factory.RepositorySessionFactory
 ch.rhj.embedded.maven.factory.SettingsFactory
 ch.rhj.embedded.maven.factory.SettingsRequestFactory
+ch.rhj.embedded.maven.factory.repository.RepositoryFactory
+ch.rhj.embedded.maven.factory.repository.RepositorySessionFactory
