@@ -19,7 +19,7 @@ import com.google.inject.Module;
 @ExtendWith(PlexusExtension.class)
 public @interface WithPlexus
 {
-	String[] exclusions() default {};
+	public String[] exclusions() default {};
 
 	public Class<? extends Module>[] modules() default {};
 }

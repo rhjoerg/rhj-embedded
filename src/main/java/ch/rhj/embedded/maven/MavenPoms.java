@@ -8,14 +8,11 @@ import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import org.junit.jupiter.api.extension.ExtendWith;
-
 @Documented
 @Retention(RUNTIME)
 @Target(TYPE)
 @Inherited
-@ExtendWith(MavenExtension.class)
-public @interface WithMaven
+public @interface MavenPoms
 {
-	public String[] poms() default { "pom.xml" };
+	String[] value();
 }

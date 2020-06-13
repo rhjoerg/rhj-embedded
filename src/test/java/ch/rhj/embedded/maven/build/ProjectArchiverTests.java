@@ -1,4 +1,4 @@
-package ch.rhj.embedded.maven.project;
+package ch.rhj.embedded.maven.build;
 
 import static ch.rhj.embedded.maven.MavenTestsConstants.EMBEDDED_POM;
 import static ch.rhj.embedded.maven.MavenTestsConstants.TEST_OUTPUT_DIRECTORY;

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+	
+	<target name="clean">
+		
+		<delete dir="target" />
+		<delete dir="foo-maven-plugin/target" />
+		<delete dir="foo-maven-plugin/target-project/target" />
+		
+		<delete dir="${user.home}/.m2/repository/ch/rhj/rhj-embedded" />
+		
+	</target>
+	
+</project>

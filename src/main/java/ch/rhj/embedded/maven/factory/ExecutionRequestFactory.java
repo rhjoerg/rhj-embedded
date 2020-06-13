@@ -18,31 +18,31 @@ import org.apache.maven.execution.MavenExecutionRequestPopulator;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.settings.Profile;
 import org.apache.maven.settings.Settings;
+import org.codehaus.plexus.PlexusContainer;
 
-import ch.rhj.embedded.maven.project.ProjectRepository;
+import ch.rhj.embedded.maven.build.ProjectRepository;
 
 @Named
 public class ExecutionRequestFactory
 {
+	private final PlexusContainer container;
 	private final PropertiesFactory propertiesFactory;
 	private final PathFactory pathFactory;
 	private final SettingsFactory settingsFactory;
 	private final ProfilesFactory profilesFactory;
 	private final RepositoryFactory repositoryFactory;
-	private final ProjectRepository projectRepository;
 	private final MavenExecutionRequestPopulator requestPopulator;
 
 	@Inject
-	public ExecutionRequestFactory(PropertiesFactory propertiesFactory, PathFactory pathFactory, SettingsFactory settingsFactory,
-			ProfilesFactory profilesFactory, RepositoryFactory repositoryFactory, ProjectRepository projectRepository,
-			MavenExecutionRequestPopulator requestPopulator)
+	public ExecutionRequestFactory(PlexusContainer container, PropertiesFactory propertiesFactory, PathFactory pathFactory, SettingsFactory settingsFactory,
+			ProfilesFactory profilesFactory, RepositoryFactory repositoryFactory, MavenExecutionRequestPopulator requestPopulator)
 	{
+		this.container = container;
 		this.propertiesFactory = propertiesFactory;
 		this.pathFactory = pathFactory;
 		this.settingsFactory = settingsFactory;
 		this.profilesFactory = profilesFactory;
 		this.repositoryFactory = repositoryFactory;
-		this.projectRepository = projectRepository;
 		this.requestPopulator = requestPopulator;
 	}
 
@@ -113,6 +113,7 @@ public class ExecutionRequestFactory
 		ArtifactRepository localRepository = repositoryFactory.createLocalRepository(settings);
 		List<ArtifactRepository> remoteRepositories = new ArrayList<>();
 		List<ArtifactRepository> pluginArtifactRepositories = new ArrayList<>();
+		ProjectRepository projectRepository = container.lookup(ProjectRepository.class);
 
 		remoteRepositories.add(projectRepository);
 		remoteRepositories.addAll(repositoryFactory.createRepositories(profiles));

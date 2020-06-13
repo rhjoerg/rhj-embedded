@@ -1,4 +1,4 @@
-package ch.rhj.embedded.maven.project;
+package ch.rhj.embedded.maven.build;
 
 import static ch.rhj.embedded.maven.MavenTestsConstants.EMBEDDED_POM;
 import static ch.rhj.embedded.maven.MavenTestsConstants.TEST_OUTPUT_DIRECTORY;
@@ -42,7 +42,7 @@ public class ProjectInstallerTests
 	public void test() throws Exception
 	{
 		MavenProject project = archiver.archive(EMBEDDED_POM, STAGING_PATH);
-		ArtifactRepository repository = installer.install(project, REPOSITORY_PATH);
+		ArtifactRepository repository = installer.install(project, "ProjectInstallerTests", REPOSITORY_PATH);
 		Artifact artifact = factory.createArtifact(project);
 
 		artifact = repository.find(artifact);

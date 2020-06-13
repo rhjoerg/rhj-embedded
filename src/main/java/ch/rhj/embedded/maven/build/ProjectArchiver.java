@@ -1,4 +1,4 @@
-package ch.rhj.embedded.maven.project;
+package ch.rhj.embedded.maven.build;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -12,7 +12,6 @@ import org.apache.maven.archiver.MavenArchiveConfiguration;
 import org.apache.maven.archiver.MavenArchiver;
 import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
-import org.apache.maven.execution.MavenExecutionRequest;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Build;
 import org.apache.maven.model.PluginManagement;
@@ -21,8 +20,6 @@ import org.codehaus.plexus.archiver.Archiver;
 import org.codehaus.plexus.archiver.jar.JarArchiver;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
 
-import ch.rhj.embedded.maven.build.MavenSessions;
-import ch.rhj.embedded.maven.factory.ExecutionRequestFactory;
 import ch.rhj.embedded.maven.factory.ProjectFactory;
 
 @Named
@@ -37,19 +34,16 @@ public class ProjectArchiver
 
 	private final ArchiverManager archiverManager;
 
-	private final ExecutionRequestFactory requestFactory;
-
-	private final MavenSessions mavenSessions;
+	private final MavenSessionRunner sessionRunner;
 
 	@Inject
 	public ProjectArchiver(ProjectFactory projectFactory, ArtifactHandlerManager artifactHandlerManager, ArchiverManager archiverManager,
-			ExecutionRequestFactory requestFactory, MavenSessions mavenSessions)
+			MavenSessionRunner sessionRunner)
 	{
 		this.projectFactory = projectFactory;
 		this.artifactHandlerManager = artifactHandlerManager;
 		this.archiverManager = archiverManager;
-		this.requestFactory = requestFactory;
-		this.mavenSessions = mavenSessions;
+		this.sessionRunner = sessionRunner;
 	}
 
 	public void archive(MavenProject project, Path outputDirectory) throws Exception
@@ -58,32 +52,18 @@ public class ProjectArchiver
 		MavenArchiver archiver = createMavenArchiver(project, outputFile);
 		MavenArchiveConfiguration configuration = createArchiveConfiguration();
 
-		archive(project, archiver, configuration);
+		sessionRunner.run(project, session -> archive(project, archiver, configuration, session));
 
 		project.getArtifact().setFile(outputFile);
 	}
 
-	public MavenProject archive(Path pomFile, Path outputDirectory) throws Exception
+	public MavenProject archive(Path pomPath, Path outputDirectory) throws Exception
 	{
-		MavenProject project = projectFactory.create(pomFile);
+		MavenProject project = projectFactory.create(pomPath);
 
 		archive(project, outputDirectory);
 
 		return project;
-	}
-
-	private void archive(MavenProject project, MavenArchiver archiver, MavenArchiveConfiguration configuration) throws Exception
-	{
-		try
-		{
-			MavenExecutionRequest request = requestFactory.createExecutionRequest(project);
-
-			mavenSessions.run(request, session -> archive(project, archiver, configuration, session));
-		}
-		catch (RuntimeException e)
-		{
-			throw Exception.class.cast(e.getCause());
-		}
 	}
 
 	private void archive(MavenProject project, MavenArchiver archiver, MavenArchiveConfiguration configuration, MavenSession session)

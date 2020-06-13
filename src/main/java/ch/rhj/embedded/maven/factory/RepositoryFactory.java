@@ -15,6 +15,8 @@ import javax.inject.Named;
 import org.apache.maven.artifact.InvalidRepositoryException;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryPolicy;
+import org.apache.maven.artifact.repository.MavenArtifactRepository;
+import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 import org.apache.maven.model.Repository;
 import org.apache.maven.repository.RepositorySystem;
 import org.apache.maven.settings.Profile;
@@ -24,11 +26,13 @@ import org.apache.maven.settings.Settings;
 public class RepositoryFactory
 {
 	private final RepositorySystem repositorySystem;
+	private final LayoutProvider layoutProvider;
 
 	@Inject
-	public RepositoryFactory(RepositorySystem repositorySystem)
+	public RepositoryFactory(RepositorySystem repositorySystem, LayoutProvider layoutProvider)
 	{
 		this.repositorySystem = repositorySystem;
+		this.layoutProvider = layoutProvider;
 	}
 
 	public String createUrl(Path repositoryPath) throws Exception
@@ -74,5 +78,21 @@ public class RepositoryFactory
 				.map(r -> fromSettingsRepository(r)) //
 				.map(this::createRepository) //
 				.collect(toList());
+	}
+
+	public MavenArtifactRepository createRepository(String id, Path repositoryPath, ArtifactRepositoryLayout layout, ArtifactRepositoryPolicy snapshots,
+			ArtifactRepositoryPolicy releases) throws Exception
+	{
+		String url = createUrl(repositoryPath);
+
+		return new MavenArtifactRepository(id, url, layout, snapshots, releases);
+	}
+
+	public MavenArtifactRepository createRepository(String id, Path repositoryPath) throws Exception
+	{
+		ArtifactRepositoryLayout layout = layoutProvider.getDefaultLayout();
+		ArtifactRepositoryPolicy policy = createPolicy();
+
+		return createRepository(id, repositoryPath, layout, policy, policy);
 	}
 }

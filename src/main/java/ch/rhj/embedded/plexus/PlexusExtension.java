@@ -44,12 +44,12 @@ public class PlexusExtension implements BeforeAllCallback, AfterAllCallback, Bef
 		Plexi.requestInjection(getContainer(context), context.getRequiredTestInstance());
 	}
 
-	private DefaultPlexusContainer getContainer(ExtensionContext context)
+	protected DefaultPlexusContainer getContainer(ExtensionContext context)
 	{
 		return getStore(context).get(CONTAINER_KEY, DefaultPlexusContainer.class);
 	}
 
-	private Store getStore(ExtensionContext context)
+	protected Store getStore(ExtensionContext context)
 	{
 		return context.getStore(STATIC_NAMESPACE);
 	}
@@ -57,7 +57,7 @@ public class PlexusExtension implements BeforeAllCallback, AfterAllCallback, Bef
 	protected DefaultPlexusContainer createContainer(ExtensionContext context) throws Exception
 	{
 		DefaultContainerConfiguration configuration = Plexi.newConfiguration();
-		Module[] modules = getModules(context);
+		Module[] modules = discoverModules(context);
 		DefaultPlexusContainer container = Plexi.newContainer(configuration, modules);
 
 		Plexi.index(container, getExclusions(context));
@@ -65,9 +65,9 @@ public class PlexusExtension implements BeforeAllCallback, AfterAllCallback, Bef
 		return container;
 	}
 
-	protected Module[] getModules(ExtensionContext context)
+	protected Module[] discoverModules(ExtensionContext context)
 	{
-		return getModuleClasses(context).stream().map(this::createModule).filter(m -> m != null).toArray(Module[]::new);
+		return discoverModuleClasses(context).stream().map(this::createModule).filter(m -> m != null).toArray(Module[]::new);
 	}
 
 	protected Module createModule(Class<? extends Module> type)
@@ -82,7 +82,7 @@ public class PlexusExtension implements BeforeAllCallback, AfterAllCallback, Bef
 		}
 	}
 
-	protected List<Class<? extends Module>> getModuleClasses(ExtensionContext context)
+	protected List<Class<? extends Module>> discoverModuleClasses(ExtensionContext context)
 	{
 		List<Class<? extends Module>> classes = new ArrayList<>();
 		Class<?> testClass = context.getRequiredTestClass();

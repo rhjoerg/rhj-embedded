@@ -1,0 +1,82 @@
+package ch.rhj.embedded.maven.build;
+
+import java.io.File;
+import java.nio.file.Path;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.installer.ArtifactInstaller;
+import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.project.MavenProject;
+
+import ch.rhj.embedded.maven.factory.ArtifactFactory;
+import ch.rhj.embedded.maven.factory.RepositoryFactory;
+
+@Named
+public class ProjectInstaller
+{
+	private final RepositoryFactory repositoryFactory;
+	private final ArtifactFactory artifactFactory;
+
+	private final MavenSessionRunner sessionRunner;
+
+	private final ArtifactInstaller artifactInstaller;
+
+	@Inject
+	public ProjectInstaller(RepositoryFactory repositoryFactory, ArtifactFactory artifactFactory, MavenSessionRunner sessionRunner,
+			ArtifactInstaller artifactInstaller)
+	{
+		this.repositoryFactory = repositoryFactory;
+		this.artifactFactory = artifactFactory;
+		this.sessionRunner = sessionRunner;
+		this.artifactInstaller = artifactInstaller;
+	}
+
+	public void install(MavenProject project, ArtifactRepository repository) throws Exception
+	{
+		Artifact jarArtifact = project.getArtifact();
+		Artifact pomArtifact = createPomArtifact(project);
+
+		File jarSource = jarArtifact.getFile();
+		File pomSource = pomArtifact.getFile();
+
+		sessionRunner.run(project, session -> install(jarSource, jarArtifact, repository));
+		sessionRunner.run(project, session -> install(pomSource, pomArtifact, repository));
+	}
+
+	public ArtifactRepository install(MavenProject project, String id, Path repositoryPath) throws Exception
+	{
+		ArtifactRepository repository = repositoryFactory.createRepository(id, repositoryPath);
+
+		install(project, repository);
+
+		return repository;
+	}
+
+	private void install(File source, Artifact artifact, ArtifactRepository repository)
+	{
+		try
+		{
+			artifactInstaller.install(source, artifact, repository);
+		}
+		catch (Exception e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	private Artifact createPomArtifact(MavenProject project)
+	{
+		String groupId = project.getGroupId();
+		String artifactId = project.getArtifactId();
+		String version = project.getVersion();
+		String packaging = "pom";
+		Artifact artifact = artifactFactory.createArtifact(groupId, artifactId, version, packaging);
+
+		artifact.setFile(project.getFile());
+
+		return artifact;
+	}
+}
