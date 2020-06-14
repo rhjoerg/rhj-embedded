@@ -1,77 +1,83 @@
 package ch.rhj.embedded.maven.factory.model;
 
-import java.io.InputStream;
-import java.net.URL;
 import java.nio.file.Path;
-import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.maven.model.Model;
-import org.apache.maven.model.Parent;
-import org.apache.maven.model.io.ModelReader;
+import org.apache.maven.model.building.ModelBuilder;
+import org.apache.maven.model.building.ModelBuildingRequest;
+import org.apache.maven.model.building.ModelBuildingResult;
+import org.eclipse.aether.RepositorySystemSession;
+
+import ch.rhj.embedded.maven.build.RepositorySessionRunner;
 
 @Named
 public class ModelFactory
 {
-	private static final Map<String, ?> OPTIONS = Map.of(ModelReader.IS_STRICT, true);
+	private final RepositorySessionRunner sessionRunner;
 
-	private final ModelReader reader;
+	private final ModelRequestFactory requestFactory;
+
+	private final ModelBuilder modelBuilder;
 
 	@Inject
-	public ModelFactory(ModelReader reader)
+	public ModelFactory(RepositorySessionRunner sessionRunner, ModelRequestFactory requestFactory, ModelBuilder modelBuilder)
 	{
-		this.reader = reader;
+		this.sessionRunner = sessionRunner;
+		this.requestFactory = requestFactory;
+		this.modelBuilder = modelBuilder;
 	}
 
-	public Model createModel(URL pomUrl) throws Exception
+	public Model createModel(Path pomPath, String... goals) throws Exception
 	{
-		try (InputStream input = pomUrl.openStream())
+		ModelResult modelResult = new ModelResult();
+
+		try
 		{
-			Model model = reader.read(input, OPTIONS);
+			sessionRunner.run(pomPath, goals, session -> createModel(session, pomPath, modelResult));
+		}
+		catch (RuntimeException e)
+		{
+			throw Exception.class.cast(e.getCause());
+		}
 
-			populate(model);
+		return modelResult.model;
+	}
 
-			return model;
+	private void createModel(RepositorySystemSession session, Path pomPath, ModelResult modelResult)
+	{
+		try
+		{
+			ModelBuildingRequest request = requestFactory.createRequest(session, pomPath);
+			ModelBuildingResult modelBuildingResult = modelBuilder.build(request);
+
+			validate(modelBuildingResult);
+
+			modelResult.model = modelBuildingResult.getEffectiveModel();
+		}
+		catch (Exception e)
+		{
+			throw new RuntimeException(e);
 		}
 	}
 
-	public Model create(Path pomPath) throws Exception
+	private void validate(ModelBuildingResult modelBuildingResult) throws Exception
 	{
-		pomPath = pomPath.toAbsolutePath().normalize();
+		Exception exception = modelBuildingResult.getProblems().stream() //
+				.filter(p -> p.getException() != null) //
+				.map(p -> p.getException()) //
+				.findFirst().orElse(null);
 
-		Model model = createModel(pomPath.toUri().toURL());
-
-		model.setPomFile(pomPath.toFile());
-
-		return model;
-	}
-
-	private void populate(Model model)
-	{
-		Parent parent = model.getParent();
-
-		if (parent != null)
+		if (exception != null)
 		{
-			setGroupId(model, parent);
-			setVersion(model, parent);
+			throw exception;
 		}
 	}
 
-	private void setGroupId(Model model, Parent parent)
+	private static class ModelResult
 	{
-		if (model.getGroupId() == null)
-		{
-			model.setGroupId(parent.getGroupId());
-		}
-	}
-
-	private void setVersion(Model model, Parent parent)
-	{
-		if (model.getVersion() == null)
-		{
-			model.setVersion(parent.getVersion());
-		}
+		public Model model;
 	}
 }

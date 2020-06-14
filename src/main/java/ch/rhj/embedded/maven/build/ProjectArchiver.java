@@ -59,7 +59,7 @@ public class ProjectArchiver
 
 	public MavenProject archive(Path pomPath, Path outputDirectory) throws Exception
 	{
-		MavenProject project = projectFactory.create(pomPath);
+		MavenProject project = projectFactory.createProject(pomPath);
 
 		archive(project, outputDirectory);
 
@@ -174,7 +174,7 @@ public class ProjectArchiver
 	{
 		Set<String> includes = new TreeSet<>();
 
-		build.getPlugins().stream().map(p -> p.getConfiguration()).filter(c -> c != null).forEach(c -> System.out.println(c));
+		// build.getPlugins().stream().map(p -> p.getConfiguration()).filter(c -> c != null).forEach(c -> System.out.println(c));
 
 		return includes;
 	}
@@ -183,7 +183,7 @@ public class ProjectArchiver
 	{
 		Set<String> excludes = new TreeSet<>();
 
-		build.getPlugins().stream().map(p -> p.getConfiguration()).filter(c -> c != null).forEach(c -> System.out.println(c));
+		// build.getPlugins().stream().map(p -> p.getConfiguration()).filter(c -> c != null).forEach(c -> System.out.println(c));
 
 		return excludes;
 	}
@@ -194,7 +194,7 @@ public class ProjectArchiver
 
 		if (pluginManagement != null)
 		{
-			pluginManagement.getPlugins().stream().map(p -> p.getConfiguration()).filter(c -> c != null).forEach(c -> System.out.println(c));
+			// pluginManagement.getPlugins().stream().map(p -> p.getConfiguration()).filter(c -> c != null).forEach(c -> System.out.println(c));
 		}
 
 		return includes;
@@ -206,7 +206,7 @@ public class ProjectArchiver
 
 		if (pluginManagement != null)
 		{
-			pluginManagement.getPlugins().stream().map(p -> p.getConfiguration()).filter(c -> c != null).forEach(c -> System.out.println(c));
+			// pluginManagement.getPlugins().stream().map(p -> p.getConfiguration()).filter(c -> c != null).forEach(c -> System.out.println(c));
 		}
 
 		return excludes;

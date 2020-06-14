@@ -16,5 +16,7 @@ ch.rhj.embedded.maven.factory.PropertiesFactory
 ch.rhj.embedded.maven.factory.SettingsFactory
 ch.rhj.embedded.maven.factory.SettingsRequestFactory
 ch.rhj.embedded.maven.factory.model.ModelFactory
+ch.rhj.embedded.maven.factory.model.ModelRequestFactory
+ch.rhj.embedded.maven.factory.model.ModelResolverFactory
 ch.rhj.embedded.maven.factory.repository.RepositoryFactory
 ch.rhj.embedded.maven.factory.repository.RepositorySessionFactory

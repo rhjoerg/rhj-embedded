@@ -8,6 +8,7 @@ import javax.inject.Named;
 
 import org.apache.maven.execution.MavenExecutionRequest;
 import org.eclipse.aether.DefaultRepositorySystemSession;
+import org.eclipse.aether.RepositorySystemSession;
 
 import ch.rhj.embedded.maven.factory.ExecutionRequestFactory;
 import ch.rhj.embedded.maven.factory.repository.RepositorySessionFactory;
@@ -25,7 +26,7 @@ public class RepositorySessionRunner
 		this.requestFactory = requestFactory;
 	}
 
-	public void run(Consumer<DefaultRepositorySystemSession> consumer, MavenExecutionRequest executionRequest) throws Exception
+	public void run(MavenExecutionRequest executionRequest, Consumer<RepositorySystemSession> consumer) throws Exception
 	{
 		DefaultRepositorySystemSession session = sessionFactory.createRepositorySession(executionRequest);
 
@@ -39,10 +40,10 @@ public class RepositorySessionRunner
 		}
 	}
 
-	public void run(Consumer<DefaultRepositorySystemSession> consumer, Path pomPath, String... goals) throws Exception
+	public void run(Path pomPath, String[] goals, Consumer<RepositorySystemSession> consumer) throws Exception
 	{
 		MavenExecutionRequest executionRequest = requestFactory.createExecutionRequest(pomPath, goals);
 
-		run(consumer, executionRequest);
+		run(executionRequest, consumer);
 	}
 }

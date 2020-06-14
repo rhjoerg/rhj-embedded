@@ -1,6 +1,7 @@
 package ch.rhj.embedded.maven;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Map;
 
@@ -10,6 +11,7 @@ import org.codehaus.plexus.DefaultPlexusContainer;
 import org.codehaus.plexus.component.repository.ComponentDescriptor;
 import org.eclipse.aether.repository.WorkspaceReader;
 import org.junit.jupiter.api.Test;
+import org.sonatype.plexus.components.sec.dispatcher.SecDispatcher;
 
 import ch.rhj.embedded.maven.build.ProjectWorkspaceReader;
 
@@ -29,5 +31,13 @@ public class MavenExtensionsTests
 
 		assertEquals(1, map.size());
 		assertEquals(ProjectWorkspaceReader.class, descriptor.getImplementationClass());
+	}
+
+	@Test
+	public void testSecDispatchers() throws Exception
+	{
+		Map<String, SecDispatcher> dispatchers = container.lookupMap(SecDispatcher.class);
+
+		assertTrue(dispatchers.containsKey("maven"));
 	}
 }

@@ -24,13 +24,13 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="src" output="foo-maven-plugin/target/classes" path="foo-maven-plugin/src/main/java"/>
-	<classpathentry kind="src" output="foo-maven-plugin/target/test-classes" path="foo-maven-plugin/src/test/java">
+	<classpathentry kind="src" output="test-projects/plugin-project/target/classes" path="test-projects/plugin-project/src/main/java"/>
+	<classpathentry kind="src" output="test-projects/plugin-project/target/test-classes" path="test-projects/plugin-project/src/test/java">
 		<attributes>
 			<attribute name="test" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="src" output="foo-maven-plugin/target-project/target/classes" path="foo-maven-plugin/target-project/src/main/java"/>
+	<classpathentry kind="src" output="test-projects/target-project/target/classes" path="test-projects/target-project/src/main/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">
 		<attributes>
