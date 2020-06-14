@@ -12,5 +12,6 @@ public class FooMojo extends AbstractMojo
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException
 	{
+		System.out.println("F00000000000000000000");
 	}
 }

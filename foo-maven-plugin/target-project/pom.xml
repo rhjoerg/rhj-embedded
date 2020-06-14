@@ -39,6 +39,19 @@
 			</plugins>
 		</pluginManagement>
 		
+		<plugins>
+		
+			<plugin>
+				<groupId>ch.rhj</groupId>
+				<artifactId>foo-maven-plugin</artifactId>
+				<version>0.0.1-SNAPSHOT</version>
+				<executions>
+					<execution><goals><goal>foo</goal></goals></execution>
+				</executions>
+			</plugin>
+		
+		</plugins>
+		
 	</build>
 
 </project>

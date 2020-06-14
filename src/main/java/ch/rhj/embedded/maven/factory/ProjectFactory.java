@@ -13,6 +13,8 @@ import org.apache.maven.model.Build;
 import org.apache.maven.model.Model;
 import org.apache.maven.project.MavenProject;
 
+import ch.rhj.embedded.maven.factory.model.ModelFactory;
+
 @Named
 public class ProjectFactory
 {

@@ -30,23 +30,9 @@ public interface Plexi
 {
 	public final static String DEFAULT_REALM_NAME = "plexus.core";
 
-//	public static void setParentFirstStrategy(ClassRealm realm)
-//	{
-//		try
-//		{
-//			ReflectionUtils.setVariableValueInObject(realm, "strategy", new ParentFirstStrategy(realm));
-//		}
-//		catch (IllegalAccessException e)
-//		{
-//			throw new RuntimeException(e);
-//		}
-//	}
-
 	public static ClassWorld newClassWorld() throws Exception
 	{
 		ClassWorld world = new ClassWorld(DEFAULT_REALM_NAME, ClassWorld.class.getClassLoader());
-
-//		setParentFirstStrategy(world.getClassRealm(DEFAULT_REALM_NAME));
 
 		return world;
 	}

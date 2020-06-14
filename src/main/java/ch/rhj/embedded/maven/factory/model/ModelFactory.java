@@ -1,4 +1,4 @@
-package ch.rhj.embedded.maven.factory;
+package ch.rhj.embedded.maven.factory.model;
 
 import java.io.InputStream;
 import java.net.URL;

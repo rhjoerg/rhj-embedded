@@ -1,4 +1,4 @@
-package ch.rhj.embedded.maven.factory;
+package ch.rhj.embedded.maven.factory.model;
 
 import static ch.rhj.embedded.maven.MavenTestsConstants.EMBEDDED_ID;
 import static ch.rhj.embedded.maven.MavenTestsConstants.EMBEDDED_POM;
@@ -33,6 +33,9 @@ import org.junit.jupiter.api.Test;
 
 import ch.rhj.embedded.maven.WithMaven;
 import ch.rhj.embedded.maven.build.RepositorySessionRunner;
+import ch.rhj.embedded.maven.factory.ProfilesFactory;
+import ch.rhj.embedded.maven.factory.PropertiesFactory;
+import ch.rhj.embedded.maven.factory.SettingsFactory;
 import ch.rhj.embedded.maven.factory.repository.RepositoryFactory;
 
 @WithMaven
