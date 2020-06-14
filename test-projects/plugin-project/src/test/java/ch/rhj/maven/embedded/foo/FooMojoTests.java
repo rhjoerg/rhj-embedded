@@ -12,6 +12,7 @@ import ch.rhj.embedded.maven.WithMaven;
 @WithMaven
 public class FooMojoTests
 {
+	@SuppressWarnings("unused")
 	@Inject
 	private Builder builder;
 
