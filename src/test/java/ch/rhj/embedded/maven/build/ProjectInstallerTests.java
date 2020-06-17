@@ -16,7 +16,9 @@ import org.apache.maven.project.MavenProject;
 import org.junit.jupiter.api.Test;
 
 import ch.rhj.embedded.maven.WithMaven;
-import ch.rhj.embedded.maven.factory.ArtifactFactory;
+import ch.rhj.embedded.maven.context.MavenContext;
+import ch.rhj.embedded.maven.context.MavenContextFactory;
+import ch.rhj.embedded.maven.factory.artifact.ArtifactFactory;
 
 @WithMaven
 public class ProjectInstallerTests
@@ -24,6 +26,9 @@ public class ProjectInstallerTests
 	private final static Path OUTPUT_DIRECTORY = TEST_OUTPUT_DIRECTORY.resolve("ProjectInstallerTests");
 	private final static Path STAGING_PATH = OUTPUT_DIRECTORY.resolve("staging");
 	private final static Path REPOSITORY_PATH = OUTPUT_DIRECTORY.resolve("repository");
+
+	@Inject
+	private MavenContextFactory mavenContextFactory;
 
 	@Inject
 	private ProjectArchiver archiver;
@@ -41,7 +46,8 @@ public class ProjectInstallerTests
 	@Test
 	public void test() throws Exception
 	{
-		MavenProject project = archiver.archive(EMBEDDED_POM, STAGING_PATH);
+		MavenContext context = mavenContextFactory.createContext(EMBEDDED_POM);
+		MavenProject project = archiver.archive(context, STAGING_PATH);
 		ArtifactRepository repository = installer.install(project, "ProjectInstallerTests", REPOSITORY_PATH);
 		Artifact artifact = factory.createArtifact(project);
 

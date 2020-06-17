@@ -8,9 +8,9 @@ import javax.inject.Named;
 import org.apache.maven.execution.MavenExecutionRequest;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.LegacySupport;
-import org.apache.maven.project.MavenProject;
 import org.apache.maven.session.scope.internal.SessionScope;
 
+import ch.rhj.embedded.maven.context.MavenContext;
 import ch.rhj.embedded.maven.factory.ExecutionRequestFactory;
 import ch.rhj.embedded.maven.factory.MavenSessionFactory;
 
@@ -53,9 +53,9 @@ public class MavenSessionRunner
 		}
 	}
 
-	public void run(MavenProject project, Consumer<MavenSession> consumer, String... goals) throws Exception
+	public void run(MavenContext context, Consumer<MavenSession> consumer) throws Exception
 	{
-		MavenExecutionRequest executionRequest = requestFactory.createExecutionRequest(project, goals);
+		MavenExecutionRequest executionRequest = requestFactory.createExecutionRequest(context);
 
 		run(executionRequest, consumer);
 	}

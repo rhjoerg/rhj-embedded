@@ -1,7 +1,5 @@
 package ch.rhj.embedded.maven.factory.model;
 
-import java.nio.file.Path;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -12,6 +10,7 @@ import org.apache.maven.model.building.ModelBuildingResult;
 import org.eclipse.aether.RepositorySystemSession;
 
 import ch.rhj.embedded.maven.build.RepositorySessionRunner;
+import ch.rhj.embedded.maven.context.MavenContext;
 
 @Named
 public class ModelFactory
@@ -30,13 +29,13 @@ public class ModelFactory
 		this.modelBuilder = modelBuilder;
 	}
 
-	public Model createModel(Path pomPath, String... goals) throws Exception
+	public Model createModel(MavenContext context) throws Exception
 	{
 		ModelResult modelResult = new ModelResult();
 
 		try
 		{
-			sessionRunner.run(pomPath, goals, session -> createModel(session, pomPath, modelResult));
+			sessionRunner.run(context, session -> createModel(session, context, modelResult));
 		}
 		catch (RuntimeException e)
 		{
@@ -46,11 +45,11 @@ public class ModelFactory
 		return modelResult.model;
 	}
 
-	private void createModel(RepositorySystemSession session, Path pomPath, ModelResult modelResult)
+	private void createModel(RepositorySystemSession session, MavenContext context, ModelResult modelResult)
 	{
 		try
 		{
-			ModelBuildingRequest request = requestFactory.createRequest(session, pomPath);
+			ModelBuildingRequest request = requestFactory.createRequest(session, context);
 			ModelBuildingResult modelBuildingResult = modelBuilder.build(request);
 
 			validate(modelBuildingResult);

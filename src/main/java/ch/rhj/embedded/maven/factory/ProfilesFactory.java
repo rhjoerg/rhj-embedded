@@ -4,7 +4,6 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.maven.settings.SettingsUtils.convertFromSettingsProfile;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -16,19 +15,19 @@ import javax.inject.Named;
 import org.apache.maven.settings.Profile;
 import org.apache.maven.settings.Settings;
 
+import ch.rhj.embedded.maven.context.MavenContext;
+
 @Named
 public class ProfilesFactory
 {
-	private final SettingsFactory settingsFactory;
-
 	@Inject
-	public ProfilesFactory(SettingsFactory settingsFactory)
+	public ProfilesFactory()
 	{
-		this.settingsFactory = settingsFactory;
 	}
 
-	public List<org.apache.maven.settings.Profile> createSettingsProfiles(Settings settings)
+	public List<org.apache.maven.settings.Profile> createSettingsProfiles(MavenContext context)
 	{
+		Settings settings = context.settings();
 		List<org.apache.maven.settings.Profile> activeByDefaultProfiles = activeByDefaultProfiles(settings);
 		List<org.apache.maven.settings.Profile> activatedProfiles = activatedProfiles(settings, activeByDefaultProfiles);
 
@@ -40,23 +39,9 @@ public class ProfilesFactory
 		return result;
 	}
 
-	public List<org.apache.maven.settings.Profile> createSettingsProfiles(Path pomPath) throws Exception
+	public List<org.apache.maven.model.Profile> createModelProfiles(MavenContext context) throws Exception
 	{
-		Settings settings = settingsFactory.createSettings(pomPath);
-
-		return createSettingsProfiles(settings);
-	}
-
-	public List<org.apache.maven.model.Profile> createModelProfiles(Settings settings) throws Exception
-	{
-		return createSettingsProfiles(settings).stream().map(p -> convertFromSettingsProfile(p)).collect(toList());
-	}
-
-	public List<org.apache.maven.model.Profile> createModelProfiles(Path pomPath) throws Exception
-	{
-		Settings settings = settingsFactory.createSettings(pomPath);
-
-		return createModelProfiles(settings);
+		return createSettingsProfiles(context).stream().map(p -> convertFromSettingsProfile(p)).collect(toList());
 	}
 
 	private List<org.apache.maven.settings.Profile> activeByDefaultProfiles(Settings settings)

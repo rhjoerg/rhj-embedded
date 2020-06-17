@@ -7,40 +7,26 @@ import org.apache.maven.execution.DefaultMavenExecutionResult;
 import org.apache.maven.execution.MavenExecutionRequest;
 import org.apache.maven.execution.MavenExecutionResult;
 import org.apache.maven.execution.MavenSession;
-import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.PlexusContainer;
 import org.eclipse.aether.RepositorySystemSession;
-
-import ch.rhj.embedded.maven.factory.repository.RepositorySessionFactory;
 
 @Named
 public class MavenSessionFactory
 {
 	private final PlexusContainer container;
-	private final RepositorySessionFactory repositorySessionFactory;
-	private final ExecutionRequestFactory executionRequestFactory;
 
 	@Inject
-	public MavenSessionFactory(PlexusContainer container, RepositorySessionFactory repositorySessionFactory, ExecutionRequestFactory executionRequestFactory)
+	public MavenSessionFactory(PlexusContainer container)
 	{
 		this.container = container;
-		this.repositorySessionFactory = repositorySessionFactory;
-		this.executionRequestFactory = executionRequestFactory;
 	}
 
 	@SuppressWarnings("deprecation")
 	public MavenSession createMavenSession(MavenExecutionRequest executionRequest)
 	{
-		RepositorySystemSession repoSession = repositorySessionFactory.createRepositorySession(executionRequest);
+		RepositorySystemSession repoSession = executionRequest.getProjectBuildingRequest().getRepositorySession();
 		MavenExecutionResult result = new DefaultMavenExecutionResult();
 
 		return new MavenSession(container, repoSession, executionRequest, result);
-	}
-
-	public MavenSession createMavenSession(MavenProject project, String... goals) throws Exception
-	{
-		MavenExecutionRequest executionRequest = executionRequestFactory.createExecutionRequest(project, goals);
-
-		return createMavenSession(executionRequest);
 	}
 }

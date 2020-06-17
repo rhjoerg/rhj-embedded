@@ -1,4 +1,4 @@
-package ch.rhj.embedded.maven.factory;
+package ch.rhj.embedded.maven.factory.artifact;
 
 import javax.inject.Inject;
 import javax.inject.Named;

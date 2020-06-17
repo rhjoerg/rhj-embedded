@@ -14,12 +14,13 @@ import org.apache.maven.artifact.repository.MavenArtifactRepository;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 import org.apache.maven.model.Repository;
 import org.apache.maven.repository.RepositorySystem;
+import org.apache.maven.settings.Profile;
 import org.apache.maven.settings.Settings;
 import org.codehaus.plexus.PlexusContainer;
 
 import ch.rhj.embedded.maven.build.ProjectRepository;
+import ch.rhj.embedded.maven.context.MavenContext;
 import ch.rhj.embedded.maven.factory.LayoutProvider;
-import ch.rhj.embedded.maven.factory.ProfilesFactory;
 
 @Named
 public class RepositoryFactory
@@ -27,32 +28,26 @@ public class RepositoryFactory
 	private final PlexusContainer container;
 	private final RepositorySystem repositorySystem;
 
-	private final ProfilesFactory profileFactory;
-
 	private final LayoutProvider layoutProvider;
 
 	@Inject
-	public RepositoryFactory(PlexusContainer container, RepositorySystem repositorySystem, ProfilesFactory profileFactory, LayoutProvider layoutProvider)
+	public RepositoryFactory(PlexusContainer container, RepositorySystem repositorySystem, LayoutProvider layoutProvider)
 	{
 		this.container = container;
 		this.repositorySystem = repositorySystem;
-		this.profileFactory = profileFactory;
 		this.layoutProvider = layoutProvider;
 	}
 
-	public RepositoryResult createRepositories(Settings settings) throws Exception
+	public RepositoryResult createRepositories(MavenContext context, boolean withProjectRepository) throws Exception
 	{
+		Settings settings = context.settings();
 		ArtifactRepository localRepository = createLocalRepository(settings);
-		ProjectRepository projectRepository = container.lookup(ProjectRepository.class);
+		ProjectRepository projectRepository = withProjectRepository ? container.lookup(ProjectRepository.class) : null;
 		RepositoryResult result = new RepositoryResult(settings, localRepository, projectRepository);
 
 		try
 		{
-			profileFactory.createSettingsProfiles(settings).stream() //
-					.flatMap(p -> p.getRepositories().stream()) //
-					.map(r -> fromSettingsRepository(r)) //
-					.map(this::createRepository) //
-					.forEach(r -> result.addRemoteRepository(r));
+			context.profiles().activeAsSettingsProfiles().forEach(profile -> addRemoteRepositories(profile, result));
 		}
 		catch (RuntimeException e)
 		{
@@ -60,6 +55,19 @@ public class RepositoryFactory
 		}
 
 		return result;
+	}
+
+	private void addRemoteRepositories(Profile profile, RepositoryResult result)
+	{
+		if (profile.getRepositories() == null)
+		{
+			return;
+		}
+
+		profile.getRepositories().stream() //
+				.map(r -> fromSettingsRepository(r)) //
+				.map(this::createRepository) //
+				.forEach(r -> result.addRemoteRepository(r));
 	}
 
 	private ArtifactRepository createLocalRepository(Settings settings) throws Exception

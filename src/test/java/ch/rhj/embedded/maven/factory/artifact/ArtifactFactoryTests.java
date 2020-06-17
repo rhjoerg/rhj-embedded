@@ -1,4 +1,4 @@
-package ch.rhj.embedded.maven.factory;
+package ch.rhj.embedded.maven.factory.artifact;
 
 import static ch.rhj.embedded.maven.MavenTestsConstants.EMBEDDED_ARTIFACT_ID;
 import static ch.rhj.embedded.maven.MavenTestsConstants.EMBEDDED_GROUP_ID;

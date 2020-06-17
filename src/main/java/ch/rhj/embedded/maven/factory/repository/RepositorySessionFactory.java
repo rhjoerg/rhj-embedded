@@ -5,9 +5,9 @@ import javax.inject.Named;
 
 import org.apache.maven.execution.MavenExecutionRequest;
 import org.apache.maven.internal.aether.DefaultRepositorySystemSessionFactory;
-import org.apache.maven.project.MavenProject;
 import org.eclipse.aether.DefaultRepositorySystemSession;
 
+import ch.rhj.embedded.maven.context.MavenContext;
 import ch.rhj.embedded.maven.factory.ExecutionRequestFactory;
 
 @Named
@@ -28,9 +28,9 @@ public class RepositorySessionFactory
 		return delegate.newRepositorySession(executionRequest);
 	}
 
-	public DefaultRepositorySystemSession createRepositorySession(MavenProject project, String... goals) throws Exception
+	public DefaultRepositorySystemSession createRepositorySession(MavenContext context) throws Exception
 	{
-		MavenExecutionRequest executionRequest = executionRequestFactory.createExecutionRequest(project, goals);
+		MavenExecutionRequest executionRequest = executionRequestFactory.createExecutionRequest(context);
 
 		return createRepositorySession(executionRequest);
 	}

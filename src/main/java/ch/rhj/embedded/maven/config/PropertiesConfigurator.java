@@ -1,26 +1,24 @@
-package ch.rhj.embedded.maven.factory;
+package ch.rhj.embedded.maven.config;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Properties;
 
-import javax.inject.Inject;
 import javax.inject.Named;
 
-@Named
-public class PropertiesFactory
-{
-	private final PathFactory pathFactory;
+import ch.rhj.embedded.maven.context.MavenContext;
 
-	@Inject
-	public PropertiesFactory(PathFactory pathFactory)
+@Named
+public class PropertiesConfigurator
+{
+	public void configure(MavenContext context) throws Exception
 	{
-		this.pathFactory = pathFactory;
+		context.systemProperties(createSystemProperties());
+		context.userProperties(createUserProperties(context));
 	}
 
-	public Properties createSystemProperties()
+	private Properties createSystemProperties()
 	{
 		Properties result = new Properties();
 		Properties systemProperties = System.getProperties();
@@ -35,19 +33,19 @@ public class PropertiesFactory
 		return result;
 	}
 
-	public Properties createUserProperties(Path pomPath) throws IOException
+	private Properties createUserProperties(MavenContext context) throws Exception
 	{
-		Properties properties = new Properties();
-		Path path = pathFactory.createUserPropertiesPath(pomPath);
+		Properties result = new Properties();
+		Path path = context.basedir().resolve("pom.properties");
 
 		if (Files.exists(path))
 		{
 			try (InputStream input = Files.newInputStream(path))
 			{
-				properties.load(input);
+				result.load(input);
 			}
 		}
 
-		return properties;
+		return result;
 	}
 }

@@ -24,6 +24,6 @@ public class BuilderTests
 	public void testVerifyPlugin() throws Exception
 	{
 		System.out.println("--- testVerifyPlugin ---");
-		builder.build(PLUGIN_POM, "clean", "test-compile");
+		builder.build(PLUGIN_POM, "clean", "test");
 	}
 }

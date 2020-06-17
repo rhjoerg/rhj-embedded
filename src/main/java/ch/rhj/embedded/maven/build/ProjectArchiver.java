@@ -20,13 +20,17 @@ import org.codehaus.plexus.archiver.Archiver;
 import org.codehaus.plexus.archiver.jar.JarArchiver;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
 
-import ch.rhj.embedded.maven.factory.ProjectFactory;
+import ch.rhj.embedded.maven.context.MavenContext;
+import ch.rhj.embedded.maven.context.MavenContextFactory;
+import ch.rhj.embedded.maven.factory.project.ProjectFactory;
 
 @Named
 public class ProjectArchiver
 {
 	private final static Set<String> DEFAULT_INCLUDES = Set.of("**/**");
 	private final static Set<String> DEFAULT_EXCLUDES = Set.of("**/package.html");
+
+	private final MavenContextFactory mavenContextFactory;
 
 	private final ProjectFactory projectFactory;
 
@@ -37,9 +41,10 @@ public class ProjectArchiver
 	private final MavenSessionRunner sessionRunner;
 
 	@Inject
-	public ProjectArchiver(ProjectFactory projectFactory, ArtifactHandlerManager artifactHandlerManager, ArchiverManager archiverManager,
-			MavenSessionRunner sessionRunner)
+	public ProjectArchiver(MavenContextFactory mavenContextFactory, ProjectFactory projectFactory, ArtifactHandlerManager artifactHandlerManager,
+			ArchiverManager archiverManager, MavenSessionRunner sessionRunner)
 	{
+		this.mavenContextFactory = mavenContextFactory;
 		this.projectFactory = projectFactory;
 		this.artifactHandlerManager = artifactHandlerManager;
 		this.archiverManager = archiverManager;
@@ -48,18 +53,19 @@ public class ProjectArchiver
 
 	public void archive(MavenProject project, Path outputDirectory) throws Exception
 	{
+		MavenContext context = mavenContextFactory.createContext(project.getFile().toPath());
 		File outputFile = getOutputFile(project, outputDirectory);
 		MavenArchiver archiver = createMavenArchiver(project, outputFile);
 		MavenArchiveConfiguration configuration = createArchiveConfiguration();
 
-		sessionRunner.run(project, session -> archive(project, archiver, configuration, session));
+		sessionRunner.run(context, session -> archive(project, archiver, configuration, session));
 
 		project.getArtifact().setFile(outputFile);
 	}
 
-	public MavenProject archive(Path pomPath, Path outputDirectory) throws Exception
+	public MavenProject archive(MavenContext context, Path outputDirectory) throws Exception
 	{
-		MavenProject project = projectFactory.createProject(pomPath);
+		MavenProject project = projectFactory.createProject(context);
 
 		archive(project, outputDirectory);
 

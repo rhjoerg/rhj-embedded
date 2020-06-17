@@ -12,12 +12,16 @@ import org.apache.maven.artifact.installer.ArtifactInstaller;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.project.MavenProject;
 
-import ch.rhj.embedded.maven.factory.ArtifactFactory;
+import ch.rhj.embedded.maven.context.MavenContext;
+import ch.rhj.embedded.maven.context.MavenContextFactory;
+import ch.rhj.embedded.maven.factory.artifact.ArtifactFactory;
 import ch.rhj.embedded.maven.factory.repository.RepositoryFactory;
 
 @Named
 public class ProjectInstaller
 {
+	private final MavenContextFactory mavenContextFactory;
+
 	private final RepositoryFactory repositoryFactory;
 	private final ArtifactFactory artifactFactory;
 
@@ -26,9 +30,10 @@ public class ProjectInstaller
 	private final ArtifactInstaller artifactInstaller;
 
 	@Inject
-	public ProjectInstaller(RepositoryFactory repositoryFactory, ArtifactFactory artifactFactory, MavenSessionRunner sessionRunner,
-			ArtifactInstaller artifactInstaller)
+	public ProjectInstaller(MavenContextFactory mavenContextFactory, RepositoryFactory repositoryFactory, ArtifactFactory artifactFactory,
+			MavenSessionRunner sessionRunner, ArtifactInstaller artifactInstaller)
 	{
+		this.mavenContextFactory = mavenContextFactory;
 		this.repositoryFactory = repositoryFactory;
 		this.artifactFactory = artifactFactory;
 		this.sessionRunner = sessionRunner;
@@ -38,8 +43,9 @@ public class ProjectInstaller
 	public void install(MavenProject project, ArtifactRepository repository) throws Exception
 	{
 		Context context = new Context(project, artifactFactory);
+		MavenContext mavenContext = mavenContextFactory.createContext(project.getFile().toPath());
 
-		sessionRunner.run(project, session -> install(context, repository));
+		sessionRunner.run(mavenContext, session -> install(context, repository));
 	}
 
 	public ArtifactRepository install(MavenProject project, String id, Path repositoryPath) throws Exception

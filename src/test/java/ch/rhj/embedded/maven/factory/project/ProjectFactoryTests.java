@@ -1,4 +1,4 @@
-package ch.rhj.embedded.maven.factory;
+package ch.rhj.embedded.maven.factory.project;
 
 import static ch.rhj.embedded.maven.MavenTestsConstants.BASE_DIR;
 import static ch.rhj.embedded.maven.MavenTestsConstants.EMBEDDED_ID;
@@ -12,17 +12,23 @@ import org.apache.maven.project.MavenProject;
 import org.junit.jupiter.api.Test;
 
 import ch.rhj.embedded.maven.WithMaven;
+import ch.rhj.embedded.maven.context.MavenContext;
+import ch.rhj.embedded.maven.context.MavenContextFactory;
 
 @WithMaven
 public class ProjectFactoryTests
 {
+	@Inject
+	private MavenContextFactory mavenContextFactory;
+
 	@Inject
 	private ProjectFactory factory;
 
 	@Test
 	public void testEmbedded() throws Exception
 	{
-		MavenProject project = factory.createProject(EMBEDDED_POM);
+		MavenContext context = mavenContextFactory.createContext(EMBEDDED_POM);
+		MavenProject project = factory.createProject(context);
 
 		assertEquals(EMBEDDED_POM, project.getFile().toPath());
 		assertEquals(EMBEDDED_ID, project.getArtifact().getId());

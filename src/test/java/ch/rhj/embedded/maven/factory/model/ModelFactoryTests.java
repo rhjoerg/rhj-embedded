@@ -26,11 +26,16 @@ import org.junit.jupiter.api.Test;
 
 import ch.rhj.embedded.maven.WithMaven;
 import ch.rhj.embedded.maven.build.RepositorySessionRunner;
+import ch.rhj.embedded.maven.context.MavenContext;
+import ch.rhj.embedded.maven.context.MavenContextFactory;
 
 @WithMaven
 public class ModelFactoryTests
 {
 	private static final Path OUTPUT_DIRECTORY = TEST_OUTPUT_DIRECTORY.resolve("ModelFactoryTests");
+
+	@Inject
+	private MavenContextFactory mavenContextFactory;
 
 	@Inject
 	private ModelFactory modelFactory;
@@ -47,7 +52,8 @@ public class ModelFactoryTests
 	@Test
 	public void testEmbedded() throws Exception
 	{
-		Model model = modelFactory.createModel(EMBEDDED_POM);
+		MavenContext context = mavenContextFactory.createContext(EMBEDDED_POM);
+		Model model = modelFactory.createModel(context);
 
 		assertEquals(EMBEDDED_ID, model.getId());
 	}
@@ -55,7 +61,8 @@ public class ModelFactoryTests
 	@Test
 	public void testPlugin() throws Exception
 	{
-		Model model = modelFactory.createModel(PLUGIN_POM);
+		MavenContext context = mavenContextFactory.createContext(PLUGIN_POM);
+		Model model = modelFactory.createModel(context);
 
 		assertEquals(PLUGIN_ID, model.getId());
 	}
@@ -63,7 +70,8 @@ public class ModelFactoryTests
 	@Test
 	public void testTarget() throws Exception
 	{
-		Model model = modelFactory.createModel(TARGET_POM);
+		MavenContext context = mavenContextFactory.createContext(TARGET_POM);
+		Model model = modelFactory.createModel(context);
 
 		assertEquals(TARGET_ID, model.getId());
 	}
@@ -78,14 +86,15 @@ public class ModelFactoryTests
 	private void testModelBuilder(Path pomPath) throws Exception
 	{
 		String[] goals = { "clean", "deploy", "site" };
+		MavenContext context = mavenContextFactory.createContext(pomPath, goals);
 
-		sessionRunner.run(pomPath, goals, session ->
+		sessionRunner.run(context, session ->
 		{
 			ModelBuildingResult result;
 
 			try
 			{
-				ModelBuildingRequest request = requestFactory.createRequest(session, pomPath);
+				ModelBuildingRequest request = requestFactory.createRequest(session, context);
 
 				result = modelBuilder.build(request);
 				result.getProblems().forEach(p -> System.out.println(p.getMessage()));

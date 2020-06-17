@@ -12,7 +12,10 @@ import javax.inject.Named;
 
 import org.apache.maven.artifact.repository.MavenArtifactRepository;
 import org.apache.maven.project.MavenProject;
+import org.codehaus.plexus.PlexusContainer;
 
+import ch.rhj.embedded.maven.context.MavenContext;
+import ch.rhj.embedded.maven.context.MavenContextFactory;
 import ch.rhj.embedded.maven.factory.LayoutProvider;
 
 @Named
@@ -25,16 +28,19 @@ public class ProjectRepository extends MavenArtifactRepository
 
 	private final Set<Path> installed = new HashSet<>();
 
-	private final ProjectArchiver archiver;
-	private final ProjectInstaller installer;
+	private final PlexusContainer container;
+
+	private MavenContextFactory mavenContextFactory;
+
+	private ProjectArchiver projectArchiver;
+	private ProjectInstaller projectInstaller;
 
 	@Inject
-	public ProjectRepository(LayoutProvider layoutProvider, ProjectArchiver archiver, ProjectInstaller installer) throws Exception
+	public ProjectRepository(PlexusContainer container, LayoutProvider layoutProvider) throws Exception
 	{
 		super(ID, url(), layoutProvider.getDefaultLayout(), createDefaultPolicy(), createDefaultPolicy());
 
-		this.archiver = archiver;
-		this.installer = installer;
+		this.container = container;
 	}
 
 	public void install(Path pomPath) throws Exception
@@ -46,10 +52,44 @@ public class ProjectRepository extends MavenArtifactRepository
 			return;
 		}
 
-		MavenProject project = archiver.archive(pomPath, STAGING_PATH);
+		ProjectArchiver archiver = getProjectArchiver();
+		ProjectInstaller installer = getProjectInstaller();
+
+		MavenContext context = getMavenContextFactory().createContext(pomPath);
+		MavenProject project = archiver.archive(context, STAGING_PATH);
 
 		installer.install(project, this);
 		installed.add(pomPath);
+	}
+
+	private MavenContextFactory getMavenContextFactory() throws Exception
+	{
+		if (mavenContextFactory == null)
+		{
+			mavenContextFactory = container.lookup(MavenContextFactory.class);
+		}
+
+		return mavenContextFactory;
+	}
+
+	private ProjectArchiver getProjectArchiver() throws Exception
+	{
+		if (projectArchiver == null)
+		{
+			projectArchiver = container.lookup(ProjectArchiver.class);
+		}
+
+		return projectArchiver;
+	}
+
+	private ProjectInstaller getProjectInstaller() throws Exception
+	{
+		if (projectInstaller == null)
+		{
+			projectInstaller = container.lookup(ProjectInstaller.class);
+		}
+
+		return projectInstaller;
 	}
 
 	private static String url() throws Exception

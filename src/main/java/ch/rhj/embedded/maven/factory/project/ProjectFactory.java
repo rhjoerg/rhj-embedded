@@ -1,6 +1,4 @@
-package ch.rhj.embedded.maven.factory;
-
-import java.nio.file.Path;
+package ch.rhj.embedded.maven.factory.project;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -8,6 +6,8 @@ import javax.inject.Named;
 import org.apache.maven.model.Model;
 import org.apache.maven.project.MavenProject;
 
+import ch.rhj.embedded.maven.context.MavenContext;
+import ch.rhj.embedded.maven.factory.artifact.ArtifactFactory;
 import ch.rhj.embedded.maven.factory.model.ModelFactory;
 
 @Named
@@ -23,12 +23,12 @@ public class ProjectFactory
 		this.artifactFactory = artifactFactory;
 	}
 
-	public MavenProject createProject(Path pomPath, String... goals) throws Exception
+	public MavenProject createProject(MavenContext context) throws Exception
 	{
-		Model model = modelFactory.createModel(pomPath, goals);
+		Model model = modelFactory.createModel(context);
 		MavenProject project = new MavenProject(model);
 
-		project.setPomFile(pomPath.toFile());
+		project.setPomFile(context.pomPath().toFile());
 		project.setArtifact(artifactFactory.createArtifact(project));
 
 		return project;

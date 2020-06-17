@@ -47,7 +47,11 @@ public class RepositoryResult
 	{
 		List<ArtifactRepository> result = new ArrayList<>();
 
-		result.add(projectRepository);
+		if (projectRepository != null)
+		{
+			result.add(projectRepository);
+		}
+
 		result.addAll(remoteRepositories);
 
 		return result;
@@ -57,7 +61,13 @@ public class RepositoryResult
 	{
 		List<ArtifactRepository> result = new ArrayList<>();
 
-		result.add(projectRepository);
+		result.addAll(remoteRepositories);
+
+		if (projectRepository != null)
+		{
+			result.add(projectRepository);
+		}
+
 		result.add(localRepository);
 		result.addAll(remoteRepositories);
 
