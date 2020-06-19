@@ -5,7 +5,6 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.apache.maven.DefaultMaven;
 import org.apache.maven.execution.DefaultMavenExecutionResult;
 import org.apache.maven.execution.MavenExecutionRequest;
 import org.apache.maven.execution.MavenExecutionResult;
@@ -19,13 +18,11 @@ import ch.rhj.embedded.maven.context.MavenContext;
 public class SessionConfigurator implements MavenConfigurator
 {
 	private final PlexusContainer container;
-	private final DefaultMaven maven;
 
 	@Inject
-	public SessionConfigurator(PlexusContainer container, DefaultMaven maven)
+	public SessionConfigurator(PlexusContainer container)
 	{
 		this.container = container;
-		this.maven = maven;
 	}
 
 	@Override
@@ -37,11 +34,8 @@ public class SessionConfigurator implements MavenConfigurator
 	@Override
 	public void configure(MavenContext context) throws Exception
 	{
+		RepositorySystemSession repositorySession = context.repositorySession();
 		MavenExecutionRequest request = context.executionRequest();
-		RepositorySystemSession repositorySession = maven.newRepositorySession(request);
-
-		context.repositorySession(repositorySession);
-
 		MavenExecutionResult result = new DefaultMavenExecutionResult();
 
 		@SuppressWarnings("deprecation")

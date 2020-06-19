@@ -11,8 +11,9 @@ public interface ConfiguratorPositions
 	public final static List<Integer> PROFILES_CONFIGURATOR_POSITIONS = List.of(20, PHASE_2 + 20);
 	public final static List<Integer> AUTHENTICATIONS_CONFIGURATOR_POSITIONS = List.of(30);
 	public final static List<Integer> REPOSITORIES_CONFIGURATOR_POSITIONS = List.of(40, PHASE_2 + 40);
-	public final static List<Integer> EXECUTION_REQUEST_CONFIGURATOR_POSITIONS = List.of(50, PHASE_2 + 50);
-	public final static List<Integer> SESSION_CONFIGURATOR_POSITIONS = List.of(60);
-	public final static List<Integer> PROJECT_REQUEST_CONFIGURATOR_POSITIONS = List.of(70);
-	public final static List<Integer> PROJECT_CONFIGURATOR_POSITIONS = List.of(80);
+	public final static List<Integer> REPOSITORY_SESSION_CONFIGURATOR_POSITIONS = List.of(50);
+	public final static List<Integer> EXECUTION_REQUEST_CONFIGURATOR_POSITIONS = List.of(60, PHASE_2 + 60);
+	public final static List<Integer> SESSION_CONFIGURATOR_POSITIONS = List.of(70);
+	public final static List<Integer> PROJECT_REQUEST_CONFIGURATOR_POSITIONS = List.of(80);
+	public final static List<Integer> PROJECT_CONFIGURATOR_POSITIONS = List.of(90);
 }

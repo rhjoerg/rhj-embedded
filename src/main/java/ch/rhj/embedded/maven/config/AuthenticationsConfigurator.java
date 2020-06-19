@@ -7,6 +7,7 @@ import java.util.TreeMap;
 import javax.inject.Named;
 
 import org.apache.maven.artifact.repository.Authentication;
+import org.apache.maven.settings.Proxy;
 import org.apache.maven.settings.Server;
 import org.apache.maven.settings.Settings;
 
@@ -46,16 +47,31 @@ public class AuthenticationsConfigurator implements MavenConfigurator
 			}
 		}
 
+		for (Proxy proxy : settings.getProxies())
+		{
+			Authentication authentication = discoverAuthentication(proxy);
+
+			if (authentication != null)
+			{
+				authenticationMap.put(proxy.getId(), authentication);
+			}
+		}
+
 		return authenticationMap;
 	}
 
 	private Authentication discoverAuthentication(Server server)
 	{
-		String username = server.getUsername();
-		String password = server.getPassword();
-		String privateKey = server.getPrivateKey();
-		String passphrase = server.getPassphrase();
+		return createAuthentication(server.getUsername(), server.getPassword(), server.getPrivateKey(), server.getPassphrase());
+	}
 
+	private Authentication discoverAuthentication(Proxy proxy)
+	{
+		return createAuthentication(proxy.getUsername(), proxy.getPassword(), null, null);
+	}
+
+	private Authentication createAuthentication(String username, String password, String privateKey, String passphrase)
+	{
 		boolean valid = false;
 
 		valid = valid || (username != null && !username.isBlank());
