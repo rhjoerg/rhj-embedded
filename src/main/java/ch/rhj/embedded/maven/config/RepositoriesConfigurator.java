@@ -19,6 +19,7 @@ import ch.rhj.embedded.maven.build.ProjectRepository;
 import ch.rhj.embedded.maven.context.ContextAuthentications;
 import ch.rhj.embedded.maven.context.ContextRepositories;
 import ch.rhj.embedded.maven.context.MavenContext;
+import ch.rhj.embedded.maven.util.ProfileConverter;
 
 @Named
 public class RepositoriesConfigurator implements MavenConfigurator
@@ -49,7 +50,7 @@ public class RepositoriesConfigurator implements MavenConfigurator
 
 		try
 		{
-			context.profiles().activeAsSettingsProfiles() //
+			ProfileConverter.convertToSettingsProfiles(context.profiles().allProfiles()) //
 					.forEach(profile -> addRemoteRepositories(profile, authentications, repositories));
 		}
 		catch (RuntimeException e)

@@ -29,7 +29,7 @@ public class ProjectRequestConfigurator implements MavenConfigurator
 		ContextProfiles profiles = context.profiles();
 		ContextRepositories repositories = context.repositories();
 
-		request.setProfiles(profiles.allAsModelProfiles());
+		request.setProfiles(profiles.allProfiles());
 		request.setActiveProfileIds(profiles.activeProfileIds());
 		request.setInactiveProfileIds(profiles.inactiveProfileIds());
 

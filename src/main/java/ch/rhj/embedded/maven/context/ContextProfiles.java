@@ -1,18 +1,18 @@
 package ch.rhj.embedded.maven.context;
 
-import static ch.rhj.embedded.maven.util.ProfileConverter.convertToModelProfiles;
-import static ch.rhj.embedded.maven.util.ProfileConverter.convertToSettingsProfiles;
-import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.TreeSet;
+
+import org.apache.maven.model.Profile;
 
 public class ContextProfiles
 {
-	private final ArrayList<org.apache.maven.settings.Profile> settingsProfiles = new ArrayList<>();
-	private final ArrayList<org.apache.maven.model.Profile> modelProfiles = new ArrayList<>();
+	private final Map<String, Profile> profiles = new TreeMap<>();
 
 	private final TreeSet<String> activeProfileIds = new TreeSet<String>();
 	private final TreeSet<String> inactiveProfileIds = new TreeSet<String>();
@@ -27,56 +27,22 @@ public class ContextProfiles
 		return new ArrayList<>(inactiveProfileIds);
 	}
 
-	public List<org.apache.maven.settings.Profile> settingsProfiles()
+	public List<Profile> allProfiles()
 	{
-		return unmodifiableList(settingsProfiles);
+		return new ArrayList<>(profiles.values());
 	}
 
-	public List<org.apache.maven.model.Profile> modelProfiles()
+	public List<Profile> activeProfiles()
 	{
-		return unmodifiableList(modelProfiles);
+		return allProfiles().stream().filter(profile -> activeProfileIds.contains(profile.getId())).collect(toList());
 	}
 
-	public List<org.apache.maven.settings.Profile> allAsSettingsProfiles()
+	public void add(Profile profile, boolean active)
 	{
-		ArrayList<org.apache.maven.settings.Profile> result = new ArrayList<>();
+		String id = profile.getId();
 
-		result.addAll(settingsProfiles);
-		result.addAll(convertToSettingsProfiles(modelProfiles));
-
-		return result;
-	}
-
-	public List<org.apache.maven.model.Profile> allAsModelProfiles()
-	{
-		ArrayList<org.apache.maven.model.Profile> result = new ArrayList<>();
-
-		result.addAll(convertToModelProfiles(settingsProfiles));
-		result.addAll(modelProfiles);
-
-		return result;
-	}
-
-	public List<org.apache.maven.settings.Profile> activeAsSettingsProfiles()
-	{
-		return allAsSettingsProfiles().stream().filter(p -> activeProfileIds.contains(p.getId())).collect(toList());
-	}
-
-	public List<org.apache.maven.model.Profile> activeAsModelProfiles()
-	{
-		return allAsModelProfiles().stream().filter(p -> activeProfileIds.contains(p.getId())).collect(toList());
-	}
-
-	public void add(org.apache.maven.settings.Profile settingsProfile, boolean active)
-	{
-		settingsProfiles.add(settingsProfile);
-		added(settingsProfile.getId(), active);
-	}
-
-	public void add(org.apache.maven.model.Profile modelProfile, boolean active)
-	{
-		modelProfiles.add(modelProfile);
-		added(modelProfile.getId(), active);
+		profiles.put(id, profile);
+		added(id, active);
 	}
 
 	private void added(String id, boolean active)

@@ -83,7 +83,7 @@ public class ExecutionRequestConfigurator implements MavenConfigurator
 
 	private void configureProfiles(DefaultMavenExecutionRequest request, ContextProfiles profiles)
 	{
-		request.setProfiles(profiles.allAsModelProfiles());
+		request.setProfiles(profiles.allProfiles());
 		request.setActiveProfiles(profiles.activeProfileIds());
 		request.setInactiveProfiles(profiles.inactiveProfileIds());
 	}
