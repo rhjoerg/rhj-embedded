@@ -1,7 +1,7 @@
 package ch.rhj.embedded.maven.config;
 
 import static org.apache.maven.model.building.ModelBuildingRequest.VALIDATION_LEVEL_STRICT;
-import static org.apache.maven.project.ProjectBuildingRequest.RepositoryMerging.POM_DOMINANT;
+import static org.apache.maven.project.ProjectBuildingRequest.RepositoryMerging.REQUEST_DOMINANT;
 
 import java.util.List;
 
@@ -40,7 +40,7 @@ public class ProjectRequestConfigurator implements MavenConfigurator
 		request.setRemoteRepositories(repositories.remoteRepositories());
 		request.setPluginArtifactRepositories(repositories.pluginRepositories());
 		request.setRepositorySession(context.repositorySession());
-		request.setRepositoryMerging(POM_DOMINANT);
+		request.setRepositoryMerging(REQUEST_DOMINANT);
 
 		request.setResolveDependencies(true);
 		request.setProcessPlugins(true);

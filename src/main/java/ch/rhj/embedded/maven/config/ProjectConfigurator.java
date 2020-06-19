@@ -5,21 +5,25 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.apache.maven.model.Model;
-import org.apache.maven.project.MavenProject;
+import org.apache.maven.model.building.ModelProblem;
+import org.apache.maven.project.ProjectBuilder;
+import org.apache.maven.project.ProjectBuildingRequest;
+import org.apache.maven.project.ProjectBuildingResult;
+import org.codehaus.plexus.logging.Logger;
 
 import ch.rhj.embedded.maven.context.MavenContext;
-import ch.rhj.embedded.maven.factory.artifact.ArtifactFactory;
 
 @Named
 public class ProjectConfigurator implements MavenConfigurator
 {
-	private final ArtifactFactory artifactFactory;
+	private final Logger logger;
+	private final ProjectBuilder projectBuilder;
 
 	@Inject
-	public ProjectConfigurator(ArtifactFactory artifactFactory)
+	public ProjectConfigurator(Logger logger, ProjectBuilder projectBuilder)
 	{
-		this.artifactFactory = artifactFactory;
+		this.logger = logger;
+		this.projectBuilder = projectBuilder;
 	}
 
 	@Override
@@ -31,12 +35,31 @@ public class ProjectConfigurator implements MavenConfigurator
 	@Override
 	public void configure(MavenContext context) throws Exception
 	{
-		Model model = context.contextModel().model();
-		MavenProject project = new MavenProject(model);
+		ProjectBuildingRequest request = context.projectRequest();
+		ProjectBuildingResult result = projectBuilder.build(context.pomPath().toFile(), request);
 
-		project.setPomFile(context.pomPath().toFile());
-		project.setArtifact(artifactFactory.createArtifact(project));
+		validate(result);
 
-		context.project(project);
+		context.project(result.getProject());
+	}
+
+	private void validate(ProjectBuildingResult result) throws Exception
+	{
+		Exception exception = null;
+
+		for (ModelProblem problem : result.getProblems())
+		{
+			logger.warn(problem.getMessage());
+
+			if (exception == null)
+			{
+				exception = problem.getException();
+			}
+		}
+
+		if (exception != null)
+		{
+			throw exception;
+		}
 	}
 }

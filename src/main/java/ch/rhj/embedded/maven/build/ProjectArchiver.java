@@ -93,9 +93,19 @@ public class ProjectArchiver
 
 	private void populate(MavenProject project, JarArchiver archiver)
 	{
-		File directory = new File(project.getBasedir(), project.getBuild().getOutputDirectory());
+		File outputDirectory = new File(project.getBuild().getOutputDirectory());
+		File directory;
 		String[] includes = getIncludes(project).toArray(String[]::new);
 		String[] excludes = getExcludes(project).toArray(String[]::new);
+
+		if (outputDirectory.isAbsolute())
+		{
+			directory = outputDirectory;
+		}
+		else
+		{
+			directory = new File(project.getBasedir(), project.getBuild().getOutputDirectory());
+		}
 
 		archiver.addDirectory(directory, includes, excludes);
 	}

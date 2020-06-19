@@ -29,9 +29,6 @@ import ch.rhj.embedded.maven.build.ProjectRepository;
 import ch.rhj.embedded.maven.build.ProjectWorkspaceReader;
 import ch.rhj.embedded.maven.config.AuthenticationsConfigurator;
 import ch.rhj.embedded.maven.config.ExecutionRequestConfigurator;
-import ch.rhj.embedded.maven.config.ModelConfigurator;
-import ch.rhj.embedded.maven.config.ModelRequestConfigurator;
-import ch.rhj.embedded.maven.config.ModelResolverConfigurator;
 import ch.rhj.embedded.maven.config.ProfilesConfigurator;
 import ch.rhj.embedded.maven.config.ProjectConfigurator;
 import ch.rhj.embedded.maven.config.ProjectRequestConfigurator;
@@ -116,9 +113,6 @@ public class XrefTests
 
 		add(graph, vertices, AuthenticationsConfigurator.class);
 		add(graph, vertices, ExecutionRequestConfigurator.class);
-		add(graph, vertices, ModelConfigurator.class);
-		add(graph, vertices, ModelRequestConfigurator.class);
-		add(graph, vertices, ModelResolverConfigurator.class);
 		add(graph, vertices, ProfilesConfigurator.class);
 		add(graph, vertices, ProjectConfigurator.class);
 		add(graph, vertices, ProjectRequestConfigurator.class);

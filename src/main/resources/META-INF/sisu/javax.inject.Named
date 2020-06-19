@@ -5,9 +5,6 @@ ch.rhj.embedded.maven.build.ProjectRepository
 ch.rhj.embedded.maven.build.ProjectWorkspaceReader
 ch.rhj.embedded.maven.config.AuthenticationsConfigurator
 ch.rhj.embedded.maven.config.ExecutionRequestConfigurator
-ch.rhj.embedded.maven.config.ModelConfigurator
-ch.rhj.embedded.maven.config.ModelRequestConfigurator
-ch.rhj.embedded.maven.config.ModelResolverConfigurator
 ch.rhj.embedded.maven.config.ProfilesConfigurator
 ch.rhj.embedded.maven.config.ProjectConfigurator
 ch.rhj.embedded.maven.config.ProjectRequestConfigurator

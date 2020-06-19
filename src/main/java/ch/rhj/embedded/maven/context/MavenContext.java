@@ -5,8 +5,7 @@ import java.util.Properties;
 
 import org.apache.maven.execution.MavenExecutionRequest;
 import org.apache.maven.execution.MavenSession;
-import org.apache.maven.model.building.ModelBuildingRequest;
-import org.apache.maven.model.resolution.ModelResolver;
+import org.apache.maven.model.Model;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.settings.Settings;
@@ -31,11 +30,6 @@ public class MavenContext
 
 	private RepositorySystemSession repositorySession;
 	private MavenSession mavenSession;
-
-	private ModelResolver modelResolver;
-	private ModelBuildingRequest modelRequest;
-
-	private ContextModel contextModel;
 
 	private ProjectBuildingRequest projectRequest;
 	private MavenProject project;
@@ -152,36 +146,6 @@ public class MavenContext
 		this.mavenSession = mavenSession;
 	}
 
-	public ModelResolver modelResolver()
-	{
-		return modelResolver;
-	}
-
-	public void modelResolver(ModelResolver modelResolver)
-	{
-		this.modelResolver = modelResolver;
-	}
-
-	public ModelBuildingRequest modelRequest()
-	{
-		return modelRequest;
-	}
-
-	public void modelRequest(ModelBuildingRequest modelRequest)
-	{
-		this.modelRequest = modelRequest;
-	}
-
-	public ContextModel contextModel()
-	{
-		return contextModel;
-	}
-
-	public void contextModel(ContextModel contextModel)
-	{
-		this.contextModel = contextModel;
-	}
-
 	public ProjectBuildingRequest projectRequest()
 	{
 		return projectRequest;
@@ -200,5 +164,10 @@ public class MavenContext
 	public void project(MavenProject project)
 	{
 		this.project = project;
+	}
+
+	public Model model()
+	{
+		return project == null ? null : project.getModel();
 	}
 }
