@@ -10,8 +10,8 @@ import javax.inject.Named;
 
 import org.apache.maven.execution.DefaultMavenExecutionRequest;
 import org.apache.maven.execution.MavenExecutionRequestPopulator;
+import org.apache.maven.project.MavenProject;
 import org.apache.maven.settings.Settings;
-import org.codehaus.plexus.logging.Logger;
 
 import ch.rhj.embedded.maven.context.ContextProfiles;
 import ch.rhj.embedded.maven.context.ContextRepositories;
@@ -20,14 +20,11 @@ import ch.rhj.embedded.maven.context.MavenContext;
 @Named
 public class ExecutionRequestConfigurator implements MavenConfigurator
 {
-	private final Logger logger;
-
 	private final MavenExecutionRequestPopulator requestPopulator;
 
 	@Inject
-	public ExecutionRequestConfigurator(Logger logger, MavenExecutionRequestPopulator requestPopulator)
+	public ExecutionRequestConfigurator(MavenExecutionRequestPopulator requestPopulator)
 	{
-		this.logger = logger;
 		this.requestPopulator = requestPopulator;
 	}
 
@@ -97,8 +94,13 @@ public class ExecutionRequestConfigurator implements MavenConfigurator
 
 	private void configureProjectBuilding(DefaultMavenExecutionRequest request, MavenContext context)
 	{
-		request.setProjectPresent(false);
+		MavenProject project = context.project();
 
-		logger.warn("project configuration not yet implemented");
+		if (project != null)
+		{
+			request.setProjectBuildingConfiguration(context.projectRequest());
+			request.setSelectedProjects(List.of(project.getId()));
+			request.setProjectPresent(true);
+		}
 	}
 }
