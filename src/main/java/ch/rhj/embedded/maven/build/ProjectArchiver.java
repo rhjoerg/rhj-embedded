@@ -21,8 +21,7 @@ import org.codehaus.plexus.archiver.jar.JarArchiver;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
 
 import ch.rhj.embedded.maven.context.MavenContext;
-import ch.rhj.embedded.maven.context.MavenContextFactory;
-import ch.rhj.embedded.maven.factory.project.ProjectFactory;
+import ch.rhj.embedded.maven.util.SessionRunner;
 
 @Named
 public class ProjectArchiver
@@ -30,44 +29,30 @@ public class ProjectArchiver
 	private final static Set<String> DEFAULT_INCLUDES = Set.of("**/**");
 	private final static Set<String> DEFAULT_EXCLUDES = Set.of("**/package.html");
 
-	private final MavenContextFactory mavenContextFactory;
-
-	private final ProjectFactory projectFactory;
-
 	private final ArtifactHandlerManager artifactHandlerManager;
 
 	private final ArchiverManager archiverManager;
 
-	private final MavenSessionRunner sessionRunner;
+	private final SessionRunner sessionRunner;
 
 	@Inject
-	public ProjectArchiver(MavenContextFactory mavenContextFactory, ProjectFactory projectFactory, ArtifactHandlerManager artifactHandlerManager,
-			ArchiverManager archiverManager, MavenSessionRunner sessionRunner)
+	public ProjectArchiver(ArtifactHandlerManager artifactHandlerManager, ArchiverManager archiverManager, SessionRunner sessionRunner)
 	{
-		this.mavenContextFactory = mavenContextFactory;
-		this.projectFactory = projectFactory;
 		this.artifactHandlerManager = artifactHandlerManager;
 		this.archiverManager = archiverManager;
 		this.sessionRunner = sessionRunner;
 	}
 
-	public void archive(MavenProject project, Path outputDirectory) throws Exception
+	public MavenProject archive(MavenContext context, Path outputDirectory) throws Exception
 	{
-		MavenContext context = mavenContextFactory.createContext(project.getFile().toPath());
+		MavenProject project = context.project();
 		File outputFile = getOutputFile(project, outputDirectory);
 		MavenArchiver archiver = createMavenArchiver(project, outputFile);
 		MavenArchiveConfiguration configuration = createArchiveConfiguration();
+		MavenSession session = context.mavenSession();
 
-		sessionRunner.run(context, session -> archive(project, archiver, configuration, session));
-
+		sessionRunner.runInMavenSession(session, () -> archive(project, archiver, configuration, session));
 		project.getArtifact().setFile(outputFile);
-	}
-
-	public MavenProject archive(MavenContext context, Path outputDirectory) throws Exception
-	{
-		MavenProject project = projectFactory.createProject(context);
-
-		archive(project, outputDirectory);
 
 		return project;
 	}

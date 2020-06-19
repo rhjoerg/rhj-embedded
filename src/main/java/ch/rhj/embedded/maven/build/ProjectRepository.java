@@ -1,6 +1,7 @@
 package ch.rhj.embedded.maven.build;
 
-import static ch.rhj.embedded.maven.factory.repository.RepositoryPolicies.createDefaultPolicy;
+import static org.apache.maven.artifact.repository.ArtifactRepositoryPolicy.CHECKSUM_POLICY_IGNORE;
+import static org.apache.maven.artifact.repository.ArtifactRepositoryPolicy.UPDATE_POLICY_ALWAYS;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -10,13 +11,14 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.maven.artifact.repository.ArtifactRepositoryPolicy;
 import org.apache.maven.artifact.repository.MavenArtifactRepository;
+import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.PlexusContainer;
 
 import ch.rhj.embedded.maven.context.MavenContext;
 import ch.rhj.embedded.maven.context.MavenContextFactory;
-import ch.rhj.embedded.maven.factory.LayoutProvider;
 
 @Named
 public class ProjectRepository extends MavenArtifactRepository
@@ -36,9 +38,9 @@ public class ProjectRepository extends MavenArtifactRepository
 	private ProjectInstaller projectInstaller;
 
 	@Inject
-	public ProjectRepository(PlexusContainer container, LayoutProvider layoutProvider) throws Exception
+	public ProjectRepository(PlexusContainer container, @Named("default") ArtifactRepositoryLayout layout) throws Exception
 	{
-		super(ID, url(), layoutProvider.getDefaultLayout(), createDefaultPolicy(), createDefaultPolicy());
+		super(ID, url(), layout, createDefaultPolicy(), createDefaultPolicy());
 
 		this.container = container;
 	}
@@ -58,7 +60,7 @@ public class ProjectRepository extends MavenArtifactRepository
 		MavenContext context = getMavenContextFactory().createContext(pomPath);
 		MavenProject project = archiver.archive(context, STAGING_PATH);
 
-		installer.install(project, this);
+		installer.install(context, project, this);
 		installed.add(pomPath);
 	}
 
@@ -95,5 +97,10 @@ public class ProjectRepository extends MavenArtifactRepository
 	private static String url() throws Exception
 	{
 		return REPOSITORY_PATH.toAbsolutePath().normalize().toUri().toURL().toString();
+	}
+
+	private static ArtifactRepositoryPolicy createDefaultPolicy()
+	{
+		return new ArtifactRepositoryPolicy(true, UPDATE_POLICY_ALWAYS, CHECKSUM_POLICY_IGNORE);
 	}
 }

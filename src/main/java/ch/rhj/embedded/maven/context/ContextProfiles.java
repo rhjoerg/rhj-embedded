@@ -15,10 +15,16 @@ public class ContextProfiles
 	private final ArrayList<org.apache.maven.model.Profile> modelProfiles = new ArrayList<>();
 
 	private final TreeSet<String> activeProfileIds = new TreeSet<String>();
+	private final TreeSet<String> inactiveProfileIds = new TreeSet<String>();
 
 	public List<String> activeProfileIds()
 	{
 		return new ArrayList<>(activeProfileIds);
+	}
+
+	public List<String> inactiveProfileIds()
+	{
+		return new ArrayList<>(inactiveProfileIds);
 	}
 
 	public List<org.apache.maven.settings.Profile> settingsProfiles()
@@ -64,20 +70,27 @@ public class ContextProfiles
 	public void add(org.apache.maven.settings.Profile settingsProfile, boolean active)
 	{
 		settingsProfiles.add(settingsProfile);
-
-		if (active)
-		{
-			activeProfileIds.add(settingsProfile.getId());
-		}
+		added(settingsProfile.getId(), active);
 	}
 
 	public void add(org.apache.maven.model.Profile modelProfile, boolean active)
 	{
 		modelProfiles.add(modelProfile);
+		added(modelProfile.getId(), active);
+	}
+
+	private void added(String id, boolean active)
+	{
+		activeProfileIds.remove(id);
+		inactiveProfileIds.remove(id);
 
 		if (active)
 		{
-			activeProfileIds.add(modelProfile.getId());
+			activeProfileIds.add(id);
+		}
+		else
+		{
+			inactiveProfileIds.add(id);
 		}
 	}
 }

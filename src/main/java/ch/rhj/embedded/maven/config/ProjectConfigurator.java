@@ -1,4 +1,6 @@
-package ch.rhj.embedded.maven.factory.project;
+package ch.rhj.embedded.maven.config;
+
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -8,29 +10,33 @@ import org.apache.maven.project.MavenProject;
 
 import ch.rhj.embedded.maven.context.MavenContext;
 import ch.rhj.embedded.maven.factory.artifact.ArtifactFactory;
-import ch.rhj.embedded.maven.factory.model.ModelFactory;
 
 @Named
-public class ProjectFactory
+public class ProjectConfigurator implements MavenConfigurator
 {
-	private final ModelFactory modelFactory;
 	private final ArtifactFactory artifactFactory;
 
 	@Inject
-	public ProjectFactory(ModelFactory modelFactory, ArtifactFactory artifactFactory)
+	public ProjectConfigurator(ArtifactFactory artifactFactory)
 	{
-		this.modelFactory = modelFactory;
 		this.artifactFactory = artifactFactory;
 	}
 
-	public MavenProject createProject(MavenContext context) throws Exception
+	@Override
+	public List<Integer> positions()
 	{
-		Model model = modelFactory.createModel(context);
+		return ConfiguratorPositions.PROJECT_CONFIGURATOR_POSITIONS;
+	}
+
+	@Override
+	public void configure(MavenContext context) throws Exception
+	{
+		Model model = context.contextModel().model();
 		MavenProject project = new MavenProject(model);
 
 		project.setPomFile(context.pomPath().toFile());
 		project.setArtifact(artifactFactory.createArtifact(project));
 
-		return project;
+		context.project(project);
 	}
 }

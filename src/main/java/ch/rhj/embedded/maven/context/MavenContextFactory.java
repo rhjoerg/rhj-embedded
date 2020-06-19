@@ -1,42 +1,54 @@
 package ch.rhj.embedded.maven.context;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.TreeMap;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import ch.rhj.embedded.maven.config.ProfilesConfigurator;
-import ch.rhj.embedded.maven.config.PropertiesConfigurator;
-import ch.rhj.embedded.maven.config.SettingsConfigurator;
+import ch.rhj.embedded.maven.config.MavenConfigurator;
 
 @Named
 public class MavenContextFactory
 {
-	private final PropertiesConfigurator propertiesConfigurator;
-	private final SettingsConfigurator settingsConfigurator;
-	private final ProfilesConfigurator profilesConfigurator;
+	private final List<MavenConfigurator> configurators;
 
 	@Inject
-	public MavenContextFactory //
-	( //
-			PropertiesConfigurator propertiesConfigurator, //
-			SettingsConfigurator settingsConfigurator, //
-			ProfilesConfigurator profilesConfigurator //
-	)
+	public MavenContextFactory(List<MavenConfigurator> configurators)
 	{
-		this.propertiesConfigurator = propertiesConfigurator;
-		this.settingsConfigurator = settingsConfigurator;
-		this.profilesConfigurator = profilesConfigurator;
+		this.configurators = new ArrayList<>(configurators);
 	}
 
 	public MavenContext createContext(Path pomPath, String... goals) throws Exception
 	{
 		MavenContext context = new MavenContext(pomPath, goals);
 
-		propertiesConfigurator.configure(context);
-		settingsConfigurator.configure(context);
-		profilesConfigurator.configure(context);
+		for (MavenConfigurator configurator : buildConfiguratorList())
+		{
+			configurator.configure(context);
+		}
 
 		return context;
+	}
+
+	private List<MavenConfigurator> buildConfiguratorList()
+	{
+		TreeMap<Integer, MavenConfigurator> map = new TreeMap<>();
+
+		for (MavenConfigurator configurator : configurators)
+		{
+			configurator.positions().forEach(position -> map.put(position, configurator));
+		}
+
+		ArrayList<MavenConfigurator> result = new ArrayList<>();
+
+		for (Integer key : map.keySet())
+		{
+			result.add(map.get(key));
+		}
+
+		return result;
 	}
 }

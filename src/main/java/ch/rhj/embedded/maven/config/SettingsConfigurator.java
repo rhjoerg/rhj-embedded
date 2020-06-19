@@ -3,6 +3,7 @@ package ch.rhj.embedded.maven.config;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Optional;
 
 import javax.inject.Inject;
@@ -16,7 +17,7 @@ import org.apache.maven.settings.building.SettingsBuildingResult;
 import ch.rhj.embedded.maven.context.MavenContext;
 
 @Named
-public class SettingsConfigurator
+public class SettingsConfigurator implements MavenConfigurator
 {
 	public static final Path USER_SETTINGS_PATH = //
 			Paths.get(System.getProperty("user.home"), ".m2", "settings.xml").toAbsolutePath();
@@ -29,6 +30,13 @@ public class SettingsConfigurator
 		this.settingsBuilder = settingsBuilder;
 	}
 
+	@Override
+	public List<Integer> positions()
+	{
+		return ConfiguratorPositions.SETTINGS_CONFIGURATOR_POSITIONS;
+	}
+
+	@Override
 	public void configure(MavenContext context) throws Exception
 	{
 		SettingsBuildingRequest request = createSettingsBuildingRequest(context);

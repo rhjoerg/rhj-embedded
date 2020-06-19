@@ -12,7 +12,6 @@ import org.apache.maven.execution.MavenExecutionResult;
 
 import ch.rhj.embedded.maven.context.MavenContext;
 import ch.rhj.embedded.maven.context.MavenContextFactory;
-import ch.rhj.embedded.maven.factory.ExecutionRequestFactory;
 
 @Named
 public class Builder
@@ -21,20 +20,17 @@ public class Builder
 
 	private final MavenContextFactory mavenContextFactory;
 
-	private final ExecutionRequestFactory requestFactory;
-
 	@Inject
-	public Builder(Maven maven, MavenContextFactory mavenContextFactory, ExecutionRequestFactory requestFactory) throws Exception
+	public Builder(Maven maven, MavenContextFactory mavenContextFactory) throws Exception
 	{
 		this.maven = maven;
 		this.mavenContextFactory = mavenContextFactory;
-		this.requestFactory = requestFactory;
 	}
 
 	public void build(Path pomPath, String... goals) throws Exception
 	{
 		MavenContext context = mavenContextFactory.createContext(pomPath, goals);
-		MavenExecutionRequest request = requestFactory.createExecutionRequest(context);
+		MavenExecutionRequest request = context.executionRequest();
 		MavenExecutionResult result = maven.execute(request);
 		Exception exception = exception(result);
 

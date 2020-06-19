@@ -11,8 +11,7 @@ import java.awt.image.BufferedImage;
 import java.lang.reflect.Constructor;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.TreeSet;
@@ -24,26 +23,25 @@ import javax.inject.Inject;
 
 import org.junit.jupiter.api.Test;
 
-import ch.rhj.embedded.maven.build.MavenSessionRunner;
 import ch.rhj.embedded.maven.build.ProjectArchiver;
 import ch.rhj.embedded.maven.build.ProjectInstaller;
 import ch.rhj.embedded.maven.build.ProjectRepository;
-import ch.rhj.embedded.maven.build.RepositorySessionRunner;
+import ch.rhj.embedded.maven.build.ProjectWorkspaceReader;
+import ch.rhj.embedded.maven.config.AuthenticationsConfigurator;
+import ch.rhj.embedded.maven.config.ExecutionRequestConfigurator;
+import ch.rhj.embedded.maven.config.ModelConfigurator;
+import ch.rhj.embedded.maven.config.ModelRequestConfigurator;
+import ch.rhj.embedded.maven.config.ModelResolverConfigurator;
+import ch.rhj.embedded.maven.config.ProfilesConfigurator;
+import ch.rhj.embedded.maven.config.ProjectConfigurator;
+import ch.rhj.embedded.maven.config.ProjectRequestConfigurator;
 import ch.rhj.embedded.maven.config.PropertiesConfigurator;
+import ch.rhj.embedded.maven.config.RepositoriesConfigurator;
+import ch.rhj.embedded.maven.config.SessionConfigurator;
 import ch.rhj.embedded.maven.config.SettingsConfigurator;
 import ch.rhj.embedded.maven.context.MavenContextFactory;
-import ch.rhj.embedded.maven.factory.ExecutionRequestFactory;
-import ch.rhj.embedded.maven.factory.LayoutProvider;
-import ch.rhj.embedded.maven.factory.MavenSessionFactory;
-import ch.rhj.embedded.maven.factory.ProfilesFactory;
 import ch.rhj.embedded.maven.factory.artifact.ArtifactFactory;
-import ch.rhj.embedded.maven.factory.model.ModelFactory;
-import ch.rhj.embedded.maven.factory.model.ModelRequestFactory;
-import ch.rhj.embedded.maven.factory.model.ModelResolverFactory;
-import ch.rhj.embedded.maven.factory.model.RawModelRequestFactory;
-import ch.rhj.embedded.maven.factory.project.ProjectFactory;
-import ch.rhj.embedded.maven.factory.repository.RepositoryFactory;
-import ch.rhj.embedded.maven.factory.repository.RepositorySessionFactory;
+import ch.rhj.embedded.maven.util.SessionRunner;
 import edu.uci.ics.jung.algorithms.layout.FRLayout;
 import edu.uci.ics.jung.graph.AbstractGraph;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
@@ -70,7 +68,7 @@ public class XrefTests
 	public void test() throws Exception
 	{
 		Dimension size = new Dimension(1200, 800);
-		Dimension margins = new Dimension(200, 40);
+		Dimension margins = new Dimension(280, 80);
 		Point2D center = new Point2D.Double(000, 400);
 
 		AbstractGraph<String, Integer> graph = createGraph();
@@ -109,15 +107,24 @@ public class XrefTests
 
 		// build
 
-		add(graph, vertices, MavenSessionRunner.class);
 		add(graph, vertices, ProjectArchiver.class);
 		add(graph, vertices, ProjectInstaller.class);
 		add(graph, vertices, ProjectRepository.class);
-		add(graph, vertices, RepositorySessionRunner.class);
+		add(graph, vertices, ProjectWorkspaceReader.class);
 
 		// config
 
+		add(graph, vertices, AuthenticationsConfigurator.class);
+		add(graph, vertices, ExecutionRequestConfigurator.class);
+		add(graph, vertices, ModelConfigurator.class);
+		add(graph, vertices, ModelRequestConfigurator.class);
+		add(graph, vertices, ModelResolverConfigurator.class);
+		add(graph, vertices, ProfilesConfigurator.class);
+		add(graph, vertices, ProjectConfigurator.class);
+		add(graph, vertices, ProjectRequestConfigurator.class);
 		add(graph, vertices, PropertiesConfigurator.class);
+		add(graph, vertices, RepositoriesConfigurator.class);
+		add(graph, vertices, SessionConfigurator.class);
 		add(graph, vertices, SettingsConfigurator.class);
 
 		// context
@@ -127,26 +134,40 @@ public class XrefTests
 		// factory
 
 		add(graph, vertices, ArtifactFactory.class);
-		add(graph, vertices, ExecutionRequestFactory.class);
-		add(graph, vertices, LayoutProvider.class);
-		add(graph, vertices, MavenSessionFactory.class);
-		add(graph, vertices, ProfilesFactory.class);
 
-		// factory.model
+		// util
 
-		add(graph, vertices, ModelFactory.class);
-		add(graph, vertices, ModelRequestFactory.class);
-		add(graph, vertices, ModelResolverFactory.class);
-		add(graph, vertices, RawModelRequestFactory.class);
+		add(graph, vertices, SessionRunner.class);
 
-		// factory.project
+		for (;;)
+		{
+			String found = null;
 
-		add(graph, vertices, ProjectFactory.class);
+			for (String vertex : graph.getVertices())
+			{
+				Collection<String> predecessors = graph.getPredecessors(vertex);
+				Collection<String> successors = graph.getSuccessors(vertex);
 
-		// factory.repository
+				boolean hasPredecessors = predecessors != null && !predecessors.isEmpty();
+				boolean hasSuccessors = successors != null && !successors.isEmpty();
 
-		add(graph, vertices, RepositoryFactory.class);
-		add(graph, vertices, RepositorySessionFactory.class);
+				if (hasPredecessors || hasSuccessors)
+				{
+					continue;
+				}
+
+				found = vertex;
+				break;
+			}
+
+			if (found != null)
+			{
+				graph.removeVertex(found);
+				continue;
+			}
+
+			break;
+		}
 
 		return graph;
 	}
@@ -179,55 +200,52 @@ public class XrefTests
 
 	private static class XrefLayout extends FRLayout<String, Integer>
 	{
-		private boolean done = false;
+		private boolean relocated = false;
 
+		private final Dimension fullSize;
 		private final Dimension margins;
 
 		public XrefLayout(Graph<String, Integer> graph, Dimension size, Dimension margins)
 		{
 			super(graph, reducedSize(size, margins));
 
+			this.fullSize = size;
 			this.margins = margins;
-
-			lockMostImportant();
 		}
 
-		private void lockMostImportant()
+		@Override
+		public Dimension getSize()
 		{
-			ArrayList<String> vertices = new ArrayList<>(getGraph().getVertices());
+			if (relocated)
+			{
+				return fullSize;
+			}
 
-			Collections.sort(vertices, (v1, v2) -> compare(v1, v2));
-
-			String vertex = vertices.get(0);
-			Dimension size = this.getSize();
-			double x = size.width / 2;
-			double y = size.height / 2;
-			this.setLocation(vertex, x, y);
-			this.lock(vertex, true);
+			return super.getSize();
 		}
-
-		private int compare(String v1, String v2)
-		{
-			Graph<String, Integer> graph = getGraph();
-
-			return graph.getSuccessorCount(v2) - graph.getSuccessorCount(v1);
-		}
-
-//		@Override
-//		public Dimension getSize()
-//		{
-//			if (done)
-//			{
-//				return fullSize;
-//			}
-//
-//			return super.getSize();
-//		}
 
 		@Override
 		public boolean done()
 		{
-			return super.done() && this.done;
+			return super.done() && relocated;
+		}
+
+		@Override
+		public void initialize()
+		{
+			if (!relocated)
+			{
+				super.initialize();
+			}
+		}
+
+		@Override
+		public void reset()
+		{
+			if (!relocated)
+			{
+				super.reset();
+			}
 		}
 
 		@Override
@@ -251,13 +269,12 @@ public class XrefTests
 			{
 				Point2D location = apply(vertex);
 				double x = location.getX() + margins.width;
-				double y = location.getY() - margins.height;
+				double y = location.getY() + margins.height;
 
-				location.setLocation(x, y);
-				setLocation(vertex, location);
+				setLocation(vertex, x, y);
 			}
 
-			this.done = true;
+			this.relocated = true;
 		}
 
 		private static Dimension reducedSize(Dimension size, Dimension margins)

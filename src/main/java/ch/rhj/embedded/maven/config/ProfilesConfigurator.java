@@ -1,5 +1,6 @@
 package ch.rhj.embedded.maven.config;
 
+import java.util.List;
 import java.util.TreeSet;
 
 import javax.inject.Inject;
@@ -12,7 +13,7 @@ import ch.rhj.embedded.maven.context.ContextProfiles;
 import ch.rhj.embedded.maven.context.MavenContext;
 
 @Named
-public class ProfilesConfigurator
+public class ProfilesConfigurator implements MavenConfigurator
 {
 	private final Logger logger;
 
@@ -22,6 +23,13 @@ public class ProfilesConfigurator
 		this.logger = logger;
 	}
 
+	@Override
+	public List<Integer> positions()
+	{
+		return ConfiguratorPositions.PROFILES_CONFIGURATOR_POSITIONS;
+	}
+
+	@Override
 	public void configure(MavenContext context)
 	{
 		ContextProfiles profiles = new ContextProfiles();

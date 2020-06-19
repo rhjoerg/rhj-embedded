@@ -3,6 +3,7 @@ package ch.rhj.embedded.maven.config;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Properties;
 
 import javax.inject.Named;
@@ -10,8 +11,15 @@ import javax.inject.Named;
 import ch.rhj.embedded.maven.context.MavenContext;
 
 @Named
-public class PropertiesConfigurator
+public class PropertiesConfigurator implements MavenConfigurator
 {
+	@Override
+	public List<Integer> positions()
+	{
+		return ConfiguratorPositions.PROPERTIES_CONFIGURATOR_POSITIONS;
+	}
+
+	@Override
 	public void configure(MavenContext context) throws Exception
 	{
 		context.systemProperties(createSystemProperties());

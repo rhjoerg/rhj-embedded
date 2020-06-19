@@ -3,7 +3,14 @@ package ch.rhj.embedded.maven.context;
 import java.nio.file.Path;
 import java.util.Properties;
 
+import org.apache.maven.execution.MavenExecutionRequest;
+import org.apache.maven.execution.MavenSession;
+import org.apache.maven.model.building.ModelBuildingRequest;
+import org.apache.maven.model.resolution.ModelResolver;
+import org.apache.maven.project.MavenProject;
+import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.settings.Settings;
+import org.eclipse.aether.RepositorySystemSession;
 
 public class MavenContext
 {
@@ -16,6 +23,22 @@ public class MavenContext
 
 	private Settings settings;
 	private ContextProfiles profiles;
+
+	private ContextAuthentications authentications;
+	private ContextRepositories repositories;
+
+	private MavenExecutionRequest executionRequest;
+
+	private RepositorySystemSession repositorySession;
+	private MavenSession mavenSession;
+
+	private ModelResolver modelResolver;
+	private ModelBuildingRequest modelRequest;
+
+	private ContextModel contextModel;
+
+	private ProjectBuildingRequest projectRequest;
+	private MavenProject project;
 
 	public MavenContext(Path pomPath, String... goals)
 	{
@@ -47,8 +70,6 @@ public class MavenContext
 	public void systemProperties(Properties systemProperties)
 	{
 		this.systemProperties = systemProperties;
-
-		settings(null);
 	}
 
 	public Properties userProperties()
@@ -59,8 +80,6 @@ public class MavenContext
 	public void userProperties(Properties userProperties)
 	{
 		this.userProperties = userProperties;
-
-		settings(null);
 	}
 
 	public Settings settings()
@@ -71,8 +90,6 @@ public class MavenContext
 	public void settings(Settings settings)
 	{
 		this.settings = settings;
-
-		profiles(null);
 	}
 
 	public ContextProfiles profiles()
@@ -83,5 +100,105 @@ public class MavenContext
 	public void profiles(ContextProfiles profiles)
 	{
 		this.profiles = profiles;
+	}
+
+	public ContextAuthentications authentications()
+	{
+		return authentications;
+	}
+
+	public void authentications(ContextAuthentications authentications)
+	{
+		this.authentications = authentications;
+	}
+
+	public ContextRepositories repositories()
+	{
+		return repositories;
+	}
+
+	public void repositories(ContextRepositories repositories)
+	{
+		this.repositories = repositories;
+	}
+
+	public MavenExecutionRequest executionRequest()
+	{
+		return executionRequest;
+	}
+
+	public void executionRequest(MavenExecutionRequest executionRequest)
+	{
+		this.executionRequest = executionRequest;
+	}
+
+	public RepositorySystemSession repositorySession()
+	{
+		return repositorySession;
+	}
+
+	public void repositorySession(RepositorySystemSession repositorySession)
+	{
+		this.repositorySession = repositorySession;
+	}
+
+	public MavenSession mavenSession()
+	{
+		return mavenSession;
+	}
+
+	public void mavenSession(MavenSession mavenSession)
+	{
+		this.mavenSession = mavenSession;
+	}
+
+	public ModelResolver modelResolver()
+	{
+		return modelResolver;
+	}
+
+	public void modelResolver(ModelResolver modelResolver)
+	{
+		this.modelResolver = modelResolver;
+	}
+
+	public ModelBuildingRequest modelRequest()
+	{
+		return modelRequest;
+	}
+
+	public void modelRequest(ModelBuildingRequest modelRequest)
+	{
+		this.modelRequest = modelRequest;
+	}
+
+	public ContextModel contextModel()
+	{
+		return contextModel;
+	}
+
+	public void contextModel(ContextModel contextModel)
+	{
+		this.contextModel = contextModel;
+	}
+
+	public ProjectBuildingRequest projectRequest()
+	{
+		return projectRequest;
+	}
+
+	public void projectRequest(ProjectBuildingRequest projectRequest)
+	{
+		this.projectRequest = projectRequest;
+	}
+
+	public MavenProject project()
+	{
+		return project;
+	}
+
+	public void project(MavenProject project)
+	{
+		this.project = project;
 	}
 }
