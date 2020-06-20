@@ -29,15 +29,15 @@ import ch.rhj.embedded.maven.build.ProjectRepository;
 import ch.rhj.embedded.maven.build.ProjectWorkspaceReader;
 import ch.rhj.embedded.maven.config.AuthenticationsConfigurator;
 import ch.rhj.embedded.maven.config.ExecutionRequestConfigurator;
+import ch.rhj.embedded.maven.config.MavenSessionConfigurator;
 import ch.rhj.embedded.maven.config.ProfilesConfigurator;
 import ch.rhj.embedded.maven.config.ProjectConfigurator;
 import ch.rhj.embedded.maven.config.ProjectRequestConfigurator;
 import ch.rhj.embedded.maven.config.PropertiesConfigurator;
 import ch.rhj.embedded.maven.config.RepositoriesConfigurator;
-import ch.rhj.embedded.maven.config.MavenSessionConfigurator;
 import ch.rhj.embedded.maven.config.SettingsConfigurator;
 import ch.rhj.embedded.maven.context.MavenContextFactory;
-import ch.rhj.embedded.maven.factory.artifact.ArtifactFactory;
+import ch.rhj.embedded.maven.util.ArtifactFactory;
 import ch.rhj.embedded.maven.util.SessionRunner;
 import edu.uci.ics.jung.algorithms.layout.FRLayout;
 import edu.uci.ics.jung.graph.AbstractGraph;
@@ -125,12 +125,9 @@ public class XrefTests
 
 		add(graph, vertices, MavenContextFactory.class);
 
-		// factory
-
-		add(graph, vertices, ArtifactFactory.class);
-
 		// util
 
+		add(graph, vertices, ArtifactFactory.class);
 		add(graph, vertices, SessionRunner.class);
 
 		for (;;)

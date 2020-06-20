@@ -12,7 +12,7 @@ import org.apache.maven.execution.MavenSession;
 import org.apache.maven.project.MavenProject;
 
 import ch.rhj.embedded.maven.context.MavenContext;
-import ch.rhj.embedded.maven.factory.artifact.ArtifactFactory;
+import ch.rhj.embedded.maven.util.ArtifactFactory;
 import ch.rhj.embedded.maven.util.SessionRunner;
 
 @Named
@@ -35,7 +35,7 @@ public class ProjectInstaller
 	public void install(MavenContext context, MavenProject project, ArtifactRepository repository) throws Exception
 	{
 		Artifact jarArtifact = project.getArtifact();
-		Artifact pomArtifact = createPomArtifact(project, artifactFactory);
+		Artifact pomArtifact = artifactFactory.createPomArtifact(project);
 		MavenSession session = context.mavenSession();
 
 		sessionRunner.runInMavenSession(session, () -> install(jarArtifact, repository));
@@ -54,18 +54,5 @@ public class ProjectInstaller
 		{
 			throw new RuntimeException(e);
 		}
-	}
-
-	private static Artifact createPomArtifact(MavenProject project, ArtifactFactory artifactFactory)
-	{
-		String groupId = project.getGroupId();
-		String artifactId = project.getArtifactId();
-		String version = project.getVersion();
-		String packaging = "pom";
-		Artifact artifact = artifactFactory.createArtifact(groupId, artifactId, version, packaging);
-
-		artifact.setFile(project.getFile());
-
-		return artifact;
 	}
 }

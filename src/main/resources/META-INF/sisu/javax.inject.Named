@@ -14,5 +14,5 @@ ch.rhj.embedded.maven.config.RepositoriesConfigurator
 ch.rhj.embedded.maven.config.RepositorySessionConfigurator
 ch.rhj.embedded.maven.config.SettingsConfigurator
 ch.rhj.embedded.maven.context.MavenContextFactory
-ch.rhj.embedded.maven.factory.artifact.ArtifactFactory
+ch.rhj.embedded.maven.util.ArtifactFactory
 ch.rhj.embedded.maven.util.SessionRunner
