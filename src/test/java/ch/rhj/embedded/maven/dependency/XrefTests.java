@@ -23,10 +23,6 @@ import javax.inject.Inject;
 
 import org.junit.jupiter.api.Test;
 
-import ch.rhj.embedded.maven.build.ProjectArchiver;
-import ch.rhj.embedded.maven.build.ProjectInstaller;
-import ch.rhj.embedded.maven.build.ProjectRepository;
-import ch.rhj.embedded.maven.build.ProjectWorkspaceReader;
 import ch.rhj.embedded.maven.config.AuthenticationsConfigurator;
 import ch.rhj.embedded.maven.config.ExecutionRequestConfigurator;
 import ch.rhj.embedded.maven.config.MavenSessionConfigurator;
@@ -37,6 +33,10 @@ import ch.rhj.embedded.maven.config.PropertiesConfigurator;
 import ch.rhj.embedded.maven.config.RepositoriesConfigurator;
 import ch.rhj.embedded.maven.config.SettingsConfigurator;
 import ch.rhj.embedded.maven.context.MavenContextFactory;
+import ch.rhj.embedded.maven.repository.ProjectArchiver;
+import ch.rhj.embedded.maven.repository.ProjectInstaller;
+import ch.rhj.embedded.maven.repository.ProjectRepository;
+import ch.rhj.embedded.maven.repository.ProjectWorkspaceReader;
 import ch.rhj.embedded.maven.util.ArtifactFactory;
 import ch.rhj.embedded.maven.util.SessionRunner;
 import edu.uci.ics.jung.algorithms.layout.FRLayout;

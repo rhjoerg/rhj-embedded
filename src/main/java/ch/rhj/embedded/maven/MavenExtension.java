@@ -12,7 +12,7 @@ import java.util.TreeSet;
 import org.codehaus.plexus.PlexusContainer;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
-import ch.rhj.embedded.maven.build.ProjectRepository;
+import ch.rhj.embedded.maven.repository.ProjectRepository;
 import ch.rhj.embedded.plexus.PlexusExtension;
 
 public class MavenExtension extends PlexusExtension

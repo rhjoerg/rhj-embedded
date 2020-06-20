@@ -13,7 +13,7 @@ import org.eclipse.aether.repository.WorkspaceReader;
 import org.junit.jupiter.api.Test;
 import org.sonatype.plexus.components.sec.dispatcher.SecDispatcher;
 
-import ch.rhj.embedded.maven.build.ProjectWorkspaceReader;
+import ch.rhj.embedded.maven.repository.ProjectWorkspaceReader;
 
 @WithMaven
 public class MavenExtensionsTests

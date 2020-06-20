@@ -1,4 +1,4 @@
-package ch.rhj.embedded.maven.build;
+package ch.rhj.embedded.maven.repository;
 
 import java.io.File;
 import java.util.List;

@@ -1,4 +1,4 @@
-package ch.rhj.embedded.maven.build;
+package ch.rhj.embedded.maven.repository;
 
 import static org.apache.maven.artifact.repository.ArtifactRepositoryPolicy.CHECKSUM_POLICY_IGNORE;
 import static org.apache.maven.artifact.repository.ArtifactRepositoryPolicy.UPDATE_POLICY_ALWAYS;

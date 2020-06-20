@@ -15,10 +15,10 @@ import org.apache.maven.repository.RepositorySystem;
 import org.apache.maven.settings.Profile;
 import org.apache.maven.settings.Settings;
 
-import ch.rhj.embedded.maven.build.ProjectRepository;
 import ch.rhj.embedded.maven.context.ContextAuthentications;
 import ch.rhj.embedded.maven.context.ContextRepositories;
 import ch.rhj.embedded.maven.context.MavenContext;
+import ch.rhj.embedded.maven.repository.ProjectRepository;
 import ch.rhj.embedded.maven.util.ProfileConverter;
 
 @Named

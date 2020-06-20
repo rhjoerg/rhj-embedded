@@ -9,7 +9,7 @@ import org.apache.maven.RepositoryUtils;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.eclipse.aether.repository.RemoteRepository;
 
-import ch.rhj.embedded.maven.build.ProjectRepository;
+import ch.rhj.embedded.maven.repository.ProjectRepository;
 
 public class ContextRepositories
 {
