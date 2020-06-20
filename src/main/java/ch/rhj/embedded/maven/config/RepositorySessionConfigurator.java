@@ -22,8 +22,6 @@ import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.DefaultSessionData;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
-import org.eclipse.aether.artifact.ArtifactTypeRegistry;
-import org.eclipse.aether.artifact.DefaultArtifactType;
 import org.eclipse.aether.collection.DependencyGraphTransformer;
 import org.eclipse.aether.collection.DependencySelector;
 import org.eclipse.aether.repository.Authentication;
@@ -33,7 +31,6 @@ import org.eclipse.aether.repository.LocalRepositoryManager;
 import org.eclipse.aether.repository.MirrorSelector;
 import org.eclipse.aether.repository.ProxySelector;
 import org.eclipse.aether.resolution.ResolutionErrorPolicy;
-import org.eclipse.aether.util.artifact.DefaultArtifactTypeRegistry;
 import org.eclipse.aether.util.graph.manager.ClassicDependencyManager;
 import org.eclipse.aether.util.graph.selector.AndDependencySelector;
 import org.eclipse.aether.util.graph.selector.ExclusionDependencySelector;
@@ -92,9 +89,6 @@ public class RepositorySessionConfigurator implements MavenConfigurator
 		session.setDependencySelector(createDependencySelector());
 		session.setDependencyGraphTransformer(createDependencyGraphTransformer());
 
-		session.setArtifactTypeRegistry(createArtifactTypeRegistry());
-		session.setArtifactDescriptorPolicy(new SimpleArtifactDescriptorPolicy(true, true));
-
 		session.setSystemProperties(context.systemProperties());
 		session.setUserProperties(context.userProperties());
 
@@ -102,6 +96,8 @@ public class RepositorySessionConfigurator implements MavenConfigurator
 		session.setResolutionErrorPolicy(new SimpleResolutionErrorPolicy(ResolutionErrorPolicy.CACHE_DISABLED));
 
 		session.setArtifactTypeRegistry(RepositoryUtils.newArtifactTypeRegistry(artifactHandlerManager));
+		session.setArtifactDescriptorPolicy(new SimpleArtifactDescriptorPolicy(true, true));
+
 		session.setLocalRepositoryManager(createLocalRepositoryManager(context, session));
 
 		session.setMirrorSelector(createMirrorSelector(context));
@@ -180,26 +176,6 @@ public class RepositorySessionConfigurator implements MavenConfigurator
 		ConflictResolver conflictResolver = new ConflictResolver(versionSelector, scopeSelector, optionalitySelector, scopeDeriver);
 
 		return new ChainedDependencyGraphTransformer(conflictResolver, new JavaDependencyContextRefiner());
-	}
-
-	private ArtifactTypeRegistry createArtifactTypeRegistry()
-	{
-		DefaultArtifactTypeRegistry registry = new DefaultArtifactTypeRegistry();
-
-		registry.add(new DefaultArtifactType("pom"));
-		registry.add(new DefaultArtifactType("maven-plugin", "jar", "", "java"));
-		registry.add(new DefaultArtifactType("jar", "jar", "", "java"));
-		registry.add(new DefaultArtifactType("ejb", "jar", "", "java"));
-		registry.add(new DefaultArtifactType("ejb-client", "jar", "client", "java"));
-		registry.add(new DefaultArtifactType("test-jar", "jar", "tests", "java"));
-		registry.add(new DefaultArtifactType("javadoc", "jar", "javadoc", "java"));
-		registry.add(new DefaultArtifactType("java-source", "jar", "sources", "java", false, false));
-		registry.add(new DefaultArtifactType("war", "war", "", "java", false, true));
-		registry.add(new DefaultArtifactType("ear", "ear", "", "java", false, true));
-		registry.add(new DefaultArtifactType("rar", "rar", "", "java", false, true));
-		registry.add(new DefaultArtifactType("par", "par", "", "java", false, true));
-
-		return registry;
 	}
 
 	private LocalRepositoryManager createLocalRepositoryManager(MavenContext context, RepositorySystemSession session)

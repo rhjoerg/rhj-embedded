@@ -46,8 +46,6 @@ public class ProjectRequestConfigurator implements MavenConfigurator
 		request.setProcessPlugins(true);
 		request.setValidationLevel(VALIDATION_LEVEL_STRICT);
 
-		request.setProject(context.project());
-
 		context.projectRequest(request);
 	}
 }

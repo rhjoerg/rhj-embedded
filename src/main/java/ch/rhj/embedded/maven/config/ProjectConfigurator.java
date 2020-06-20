@@ -6,6 +6,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.maven.model.building.ModelProblem;
+import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.project.ProjectBuildingResult;
@@ -40,7 +41,10 @@ public class ProjectConfigurator implements MavenConfigurator
 
 		validate(result);
 
-		context.project(result.getProject());
+		MavenProject project = result.getProject();
+
+		request.setProject(project);
+		context.project(project);
 	}
 
 	private void validate(ProjectBuildingResult result) throws Exception

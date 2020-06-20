@@ -34,7 +34,7 @@ import ch.rhj.embedded.maven.config.ProjectConfigurator;
 import ch.rhj.embedded.maven.config.ProjectRequestConfigurator;
 import ch.rhj.embedded.maven.config.PropertiesConfigurator;
 import ch.rhj.embedded.maven.config.RepositoriesConfigurator;
-import ch.rhj.embedded.maven.config.SessionConfigurator;
+import ch.rhj.embedded.maven.config.MavenSessionConfigurator;
 import ch.rhj.embedded.maven.config.SettingsConfigurator;
 import ch.rhj.embedded.maven.context.MavenContextFactory;
 import ch.rhj.embedded.maven.factory.artifact.ArtifactFactory;
@@ -118,7 +118,7 @@ public class XrefTests
 		add(graph, vertices, ProjectRequestConfigurator.class);
 		add(graph, vertices, PropertiesConfigurator.class);
 		add(graph, vertices, RepositoriesConfigurator.class);
-		add(graph, vertices, SessionConfigurator.class);
+		add(graph, vertices, MavenSessionConfigurator.class);
 		add(graph, vertices, SettingsConfigurator.class);
 
 		// context

@@ -15,12 +15,12 @@ import org.eclipse.aether.RepositorySystemSession;
 import ch.rhj.embedded.maven.context.MavenContext;
 
 @Named
-public class SessionConfigurator implements MavenConfigurator
+public class MavenSessionConfigurator implements MavenConfigurator
 {
 	private final PlexusContainer container;
 
 	@Inject
-	public SessionConfigurator(PlexusContainer container)
+	public MavenSessionConfigurator(PlexusContainer container)
 	{
 		this.container = container;
 	}
@@ -28,7 +28,7 @@ public class SessionConfigurator implements MavenConfigurator
 	@Override
 	public List<Integer> positions()
 	{
-		return ConfiguratorPositions.SESSION_CONFIGURATOR_POSITIONS;
+		return ConfiguratorPositions.MAVEN_SESSION_CONFIGURATOR_POSITIONS;
 	}
 
 	@Override

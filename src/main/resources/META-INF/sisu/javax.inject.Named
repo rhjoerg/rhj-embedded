@@ -5,13 +5,13 @@ ch.rhj.embedded.maven.build.ProjectRepository
 ch.rhj.embedded.maven.build.ProjectWorkspaceReader
 ch.rhj.embedded.maven.config.AuthenticationsConfigurator
 ch.rhj.embedded.maven.config.ExecutionRequestConfigurator
+ch.rhj.embedded.maven.config.MavenSessionConfigurator
 ch.rhj.embedded.maven.config.ProfilesConfigurator
 ch.rhj.embedded.maven.config.ProjectConfigurator
 ch.rhj.embedded.maven.config.ProjectRequestConfigurator
 ch.rhj.embedded.maven.config.PropertiesConfigurator
 ch.rhj.embedded.maven.config.RepositoriesConfigurator
 ch.rhj.embedded.maven.config.RepositorySessionConfigurator
-ch.rhj.embedded.maven.config.SessionConfigurator
 ch.rhj.embedded.maven.config.SettingsConfigurator
 ch.rhj.embedded.maven.context.MavenContextFactory
 ch.rhj.embedded.maven.factory.artifact.ArtifactFactory

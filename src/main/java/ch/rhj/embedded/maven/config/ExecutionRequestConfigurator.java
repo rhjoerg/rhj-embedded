@@ -10,7 +10,6 @@ import javax.inject.Named;
 
 import org.apache.maven.execution.DefaultMavenExecutionRequest;
 import org.apache.maven.execution.MavenExecutionRequestPopulator;
-import org.apache.maven.project.MavenProject;
 import org.apache.maven.settings.Settings;
 
 import ch.rhj.embedded.maven.context.ContextProfiles;
@@ -94,13 +93,7 @@ public class ExecutionRequestConfigurator implements MavenConfigurator
 
 	private void configureProjectBuilding(DefaultMavenExecutionRequest request, MavenContext context)
 	{
-		MavenProject project = context.project();
-
-		if (project != null)
-		{
-			request.setProjectBuildingConfiguration(context.projectRequest());
-			request.setSelectedProjects(List.of(project.getId()));
-			request.setProjectPresent(true);
-		}
+		request.setProjectBuildingConfiguration(context.projectRequest());
+		request.setProjectPresent(true);
 	}
 }
